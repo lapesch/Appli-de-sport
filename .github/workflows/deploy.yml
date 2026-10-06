@@ -1,0 +1,22 @@
+name: Déploiement Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main # Si ta branche s'appelle master, remplace main par master
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Déploiement sur Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: appli-de-sport-b086f
+          
