@@ -1,0 +1,47 @@
+/* Style du bouton avec image en fondue progressive */
+.btn-img {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end; /* Aligne le texte sur la droite */
+    padding: 14px 20px;
+    min-height: 60px;
+    background-color: var(--bg-card, #1e293b);
+    color: var(--text-main, #f8fafc);
+    border: 1px solid var(--border, #334155);
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+    overflow: hidden;
+    z-index: 1;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.btn-img:hover {
+    border-color: var(--accent, #3b82f6);
+    transform: translateY(-2px);
+}
+
+/* Couche de l'image sur le côté gauche avec masque de dégradé */
+.btn-img::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 65%; /* Couvre un peu plus de la moitié du bouton */
+    height: 100%;
+    background-image: var(--btn-bg);
+    background-size: cover;
+    background-position: left center;
+    background-repeat: no-repeat;
+    
+    /* Masque de transparence : 100% à gauche -> 0% vers la droite */
+    -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+    mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+    
+    z-index: -1;
+    pointer-events: none;
+}
+

@@ -1,0 +1,328 @@
+/* Structure globale */
+body {
+    background-color: #121214;
+    color: #e1e1e6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 15px;
+}
+
+.sommeil-container {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sommeil-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-retour {
+    background: transparent;
+    border: 1px solid #29292e;
+    color: #a8a8b3;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Carte Récupération */
+.card-recuperation {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 6px solid #00B37E;
+}
+
+.card-recuperation.status-orange { border-left-color: #ff9900; }
+.card-recuperation.status-rouge { border-left-color: #f75a68; }
+
+.recup-main {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.badge-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #121214;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.pille {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+.pille-verte { background-color: #00B37E; box-shadow: 0 0 8px #00B37E; }
+.pille-orange { background-color: #ff9900; box-shadow: 0 0 8px #ff9900; }
+.pille-rouge { background-color: #f75a68; box-shadow: 0 0 8px #f75a68; }
+
+.score-valeur {
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+.message-conseil {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #29292e;
+    font-size: 0.9rem;
+    color: #a8a8b3;
+}
+
+/* Boutons et cartes */
+.card-sommeil {
+    background: #1e293b;
+    border: 1px solid #29292e;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.btn-action-manuelle {
+    width: 100%;
+    background: #29292e;
+    color: #fff;
+    border: 1px solid #3b82f6;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Graphique en bâtons */
+.chart-container {
+    position: relative;
+    height: 180px;
+    margin-top: 20px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.target-line {
+    position: absolute;
+    width: 100%;
+    border-top: 2px dashed #3b82f6;
+    z-index: 1;
+}
+
+.target-line span {
+    position: absolute;
+    right: 0;
+    top: -12px;
+    background: #1e293b;
+    font-size: 0.75rem;
+    color: #3b82f6;
+    padding: 0 4px;
+}
+
+.bars-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    z-index: 2;
+}
+
+.bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 12%;
+    height: 100%;
+    justify-content: flex-end;
+}
+
+.bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s;
+    position: relative;
+}
+
+.bar-green { background-color: #00B37E; }
+.bar-orange { background-color: #ff9900; }
+.bar-red { background-color: #f75a68; }
+
+.bar-label {
+    margin-top: 5px;
+    font-size: 0.75rem;
+    color: #a8a8b3;
+}
+
+/* Tooltip Graphique */
+.bar:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 105%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #121214;
+    color: #fff;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    border: 1px solid #29292e;
+}
+
+/* Grille de stats */
+.grid-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.card-stat {
+    background: #1e293b;
+    border: 1px solid #29292e;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+}
+
+.stat-big-valeur {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin: 8px 0;
+}
+
+.stat-tendance { font-size: 0.85rem; }
+.tendance-up { color: #00B37E; }
+.tendance-down { color: #f75a68; }
+
+/* Modal Pop-up */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-box-sommeil {
+    background: #121214;
+    border: 2px solid #29292e;
+    border-radius: 12px;
+    padding: 20px;
+    width: 90%;
+    max-width: 420px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.recap-horaires {
+    display: flex;
+    justify-content: space-around;
+    margin: 15px 0;
+}
+
+.time-picker-group input {
+    background: #1e293b;
+    border: 1px solid #29292e;
+    color: #fff;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.rating-stars {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #29292e;
+}
+
+.rating-stars .star.active { color: #ffb703; }
+
+.badges-radio {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.btn-badge {
+    flex: 1;
+    background: #1e293b;
+    border: 1px solid #29292e;
+    color: #fff;
+    padding: 8px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.btn-badge.selected { border-color: #3b82f6; background: #2563eb; }
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    font-size: 0.85rem;
+    margin: 10px 0;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-valider {
+    flex: 2;
+    background: #00B37E;
+    color: #121214;
+    font-weight: bold;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-fermer {
+    flex: 1;
+    background: transparent;
+    border: 1px solid #29292e;
+    color: #a8a8b3;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.settings-block input, .settings-block select {
+    background: #121214;
+    border: 1px solid #29292e;
+    color: #fff;
+    padding: 6px;
+    border-radius: 6px;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.btn-save-settings {
+    width: 100%;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}

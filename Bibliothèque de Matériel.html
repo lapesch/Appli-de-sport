@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="theme.js"></script>
+  <!-- Fichier Web Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Personnalisation de la barre d'état Android -->
+<meta name="theme-color" content="#ff9900">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque Matériel - Mon Carnet Sportif</title>
+    <link rel="stylesheet" href="style-dashboard.css">
+    <style>
+        /* Grille pour les 3 univers de matériel */
+        .grid-categories {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .grid-categories {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-categorie {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--border-color, #29292e);
+            border-radius: 10px;
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-categorie.maison { border-color: #ffb86c; }
+        .card-categorie.maison:hover { background: rgba(255, 184, 108, 0.1); }
+        .card-categorie.maison .icon { font-size: 2.2rem; }
+        
+        .card-categorie.salle { border-color: #64ffda; }
+        .card-categorie.salle:hover { background: rgba(100, 255, 218, 0.1); }
+        .card-categorie.salle .icon { font-size: 2.2rem; }
+
+        .card-categorie.street { border-color: #ff55ff; }
+        .card-categorie.street:hover { background: rgba(255, 85, 255, 0.1); }
+        .card-categorie.street .icon { font-size: 2.2rem; }
+
+        .card-title {
+            font-weight: bold;
+            font-size: 1.05rem;
+            color: var(--text-color, #e1e1e6);
+        }
+
+        .btn-back {
+            margin-top: 30px;
+            background: transparent;
+            border: 1px solid var(--border-color, #29292e);
+            color: var(--text-color, #e1e1e6);
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Liste de matériel dans les catégories */
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 25px;
+            text-align: left;
+        }
+        .item-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color, #29292e);
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+        .item-card h3 {
+            margin-top: 0;
+            color: var(--accent-color, #00B37E);
+            font-size: 1.2rem;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+        .item-detail {
+            font-size: 0.9rem;
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+        .item-detail strong {
+            color: #a8a8b3;
+        }
+        .btn-add-matos {
+            background: var(--accent-color, #00B37E);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            margin-top: 10px;
+        }
+        .btn-add-matos:hover {
+            transform: scale(1.02);
+            background: #009d6e;
+        }
+
+        /* POPUP ET CONFIGURATION */
+        .modal-overlay {
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000;
+        }
+        .modal-box {
+            background: #121214;
+            border: 1px solid var(--border-color, #29292e);
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 480px;
+            width: 90%;
+            box-sizing: border-box;
+            color: var(--text-color, #e1e1e6);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--accent-color, #00B37E);
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color, #29292e);
+            color: var(--text-color, #e1e1e6);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        /* Section multi-catégories */
+        .multicat-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+        }
+        .multicat-title {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--accent-color, #00B37E);
+            margin-bottom: 8px;
+        }
+        .multicat-options {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .multicat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .multicat-item input {
+            cursor: pointer;
+            width: auto !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <div id="view-biblio-matos" style="display: block;">        
+        <header class="dashboard-header" style="margin-bottom: 20px;">
+            <h1 style="color: var(--accent-color, #00B37E); display: flex; align-items: center; gap: 10px; justify-content: center;">🏋️ Bibliothèque de Matériel</h1>
+            <p style="font-size: 0.9rem; color: #a8a8b3; text-align: center;">Sélectionne une catégorie pour découvrir la base de données du matériel :</p>
+        </header>
+
+        <div class="grid-categories">
+            <div class="card-categorie maison" onclick="ouvrirCategorieBiblio('maison')">
+                <span class="icon">🏠</span>
+                <span class="card-title">Maison</span>
+            </div>
+            <div class="card-categorie salle" onclick="ouvrirCategorieBiblio('salle')">
+                <span class="icon">🏋️</span>
+                <span class="card-title">Salle</span>
+            </div>
+            <div class="card-categorie street" onclick="ouvrirCategorieBiblio('street')">
+                <span class="icon">🌳</span>
+                <span class="card-title">Street</span>
+            </div>
+        </div>
+        
+        <button class="btn-back" onclick="window.location.href='dashboard.html'">← Retour au Tableau de Bord</button>
+    </div>
+
+    <div id="view-categorie-details" style="display: none;">
+        <header class="dashboard-header" style="margin-bottom: 10px;">
+            <h1 id="categorie-title" style="color: var(--accent-color, #00B37E); display: flex; align-items: center; gap: 10px; justify-content: center;"></h1>
+            <p id="categorie-desc" style="font-size: 0.9rem; color: #a8a8b3; text-align: center;"></p>
+        </header>
+
+        <div class="items-list" id="items-container"></div>
+        <button class="btn-back" onclick="retourVersCategories()">← Retour aux Catégories</button>
+    </div>
+</div>
+
+<div id="popup-config-materiel" class="modal-overlay">
+    <div class="modal-box">
+        <h2 id="config-title" style="margin-top: 0; color: var(--accent-color, #00B37E);">⚙️ Configurer l'équipement</h2>
+        <p style="font-size: 0.85rem; color: #a8a8b3; margin-bottom: 20px;">Personnalise ton équipement avant de l'ajouter à tes affaires :</p>
+        
+        <form id="form-config-matos" onsubmit="validerAjoutMateriel(event)">
+            <div id="dynamic-fields-container"></div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="input-etat">État général de ton matériel :</label>
+                <select id="input-etat" required>
+                    <option value="Neuf">Neuf</option>
+                    <option value="Très bon état">Très bon état</option>
+                    <option value="Usagé">Usagé / Fonctionnel</option>
+                    <option value="Abîmé">Abîmé (A remplacer bientôt)</option>
+                </select>
+            </div>
+
+            <div class="multicat-box">
+                <div class="multicat-title">📍 Utilises-tu ce même exemplaire ailleurs ?</div>
+                <p style="font-size: 0.75rem; color: #a8a8b3; margin-top: 0; margin-bottom: 8px;">Coche les autres catégories où tu souhaites l'ajouter instantanément :</p>
+                <div class="multicat-options" id="multicat-checkboxes-container"></div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button type="submit" class="btn-add-matos" style="width: 100%; margin: 0;">Ajouter à mon matos</button>
+                <button type="button" class="btn-back" onclick="fermerConfigPopup()" style="width: auto; margin: 0; padding: 10px 15px;">Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Logique unifiée en Module ES pour éviter les déconnexions -->
+<script type="module">
+    import { auth } from "./firebase-config.js";
+    import { chargerDonneesCloud, sauvegarderDonneesCloud } from "./storage.js";
+
+    // Bases de données locales
+    const equipementsStreet = [
+        { id: "barre_traction", nom: "La Barre de Traction", desc: "Une barre horizontale en métal surélevée...", exercices: "Tractions...", muscles: "Grand dorsal..." },
+        { id: "barres_dips", nom: "Les Barres de Dips (Parallèles)", desc: "Deux barres métalliques parallèles...", exercices: "Dips...", muscles: "Bas des pectoraux..." },
+        { id: "parallettes", nom: "Les Parallettes (Mini-barres)", desc: "Deux petites barres très basses posées au sol...", exercices: "Pompes...", muscles: "Pectoraux..." },
+        { id: "anneaux_gym", nom: "Les Anneaux de Gymnastique", desc: "Deux cercles suspendus...", exercices: "Dips aux anneaux...", muscles: "Absolument tout..." },
+        { id: "bandes_elastiques", nom: "Les Bandes Élastiques", desc: "De grandes boucles fermées...", exercices: "Assistance...", muscles: "Tout dépend..." },
+        { id: "magnesie", nom: "La Magnésie", desc: "Un produit blanc...", exercices: "Indispensable...", muscles: "Pas de muscle..." },
+        { id: "bandes_poignets", nom: "Les Bandes de Poignets (Wrist Wraps)", desc: "Des bandes en tissu...", exercices: "Exercices de poussée...", muscles: "Rôle de soutien..." },
+        { id: "coudieres", nom: "Les Coudières", desc: "Des manchons en néoprène...", exercices: "Mouvements de poussée...", muscles: "Protection..." },
+        { id: "gants_maniques", nom: "Les Gants ou Maniques", desc: "Les gants couvrent...", exercices: "Tractions...", muscles: "Protection de la peau..." },
+        { id: "ceinture_lest", nom: "La Ceinture de Lest (Dip Belt)", desc: "Une ceinture très large...", exercices: "Tractions lestées...", muscles: "Augmente drastiquement..." },
+        { id: "gilet_leste", nom: "Le Gilet Lesté", desc: "Une sorte de gilet tactique...", exercices: "Pompes, tractions...", muscles: "Travail de l'ensemble..." }
+    ];
+
+    const equipementsMaison = [
+        { id: "chaises", nom: "Les Chaises", desc: "Deux chaises solides...", exercices: "Dips...", muscles: "Triceps..." },
+        { id: "table_cuisine", nom: "La Table de Cuisine", desc: "Une table en bois...", exercices: "Tractions australiennes...", muscles: "Grand dorsal..." },
+        { id: "sac_a_dos_leste", nom: "Le Sac à dos lesté", desc: "Un sac à dos solide...", exercices: "Pompes...", muscles: "L'ensemble..." },
+        { id: "halteres_reglables", nom: "Les Haltères réglables", desc: "Deux petites barres...", exercices: "Curl biceps...", muscles: "Absolument tout..." },
+        { id: "bandes_poignees", nom: "Les Bandes Élastiques à poignées", desc: "Des tubes en latex...", exercices: "Tirages...", muscles: "Tout le corps..." },
+        { id: "tapis_fitness", nom: "Le Tapis de Fitness / Yoga", desc: "Un tapis en mousse...", exercices: "Gainage...", muscles: "Ceinture abdominale..." },
+        { id: "barre_porte", nom: "La Barre de traction de porte", desc: "Une structure en métal...", exercices: "Tractions...", muscles: "Dos, biceps..." },
+        { id: "trx", nom: "Les Sangles de Suspension (type TRX)", desc: "Deux sangles réglables...", exercices: "Pompes suspendues...", muscles: "Tout le corps..." },
+        { id: "kettlebell", nom: "La Kettlebell", desc: "Une boule de fonte...", exercices: "Kettlebell Swing...", muscles: "Chaîne postérieure..." },
+        { id: "ab_wheel", nom: "La Roue Abdominale (Ab Wheel)", desc: "Une petite roue...", exercices: "Le \"roll-out\"...", muscles: "Grand droit..." },
+        { id: "medicine_ball", nom: "Le medecine-ball ou Slam Ball", desc: "Un gros ballon lourd...", exercices: "Slams...", muscles: "Puissance explosive..." },
+        { id: "banc_reglable", nom: "Le Banc de musculation réglable", desc: "Un banc rembourré...", exercices: "Développé couché...", muscles: "Pectoraux..." },
+        { id: "power_rack", nom: "Le Rack à Squat (ou Power Rack)", desc: "Une grande cage...", exercices: "Squat arrière...", muscles: "Quadriceps..." },
+        { id: "barre_olympique", nom: "La Barre Olympique", desc: "La totalité des muscles...", exercices: "Soulevé de terre...", muscles: "La totalité..." }
+    ];
+
+    const equipementsSalle = [
+        { id: "halteres_salle", nom: "Les Haltères (Dumbbells)", desc: "Une série d'haltères...", exercices: "Développé couché...", muscles: "Permet de cibler..." },
+        { id: "barre_salle_rack", nom: "La Barre Olympique et le Rack", desc: "Une grande barre en acier...", exercices: "Back Squat...", muscles: "Les grands groupes..." },
+        { id: "banc_bench_press", nom: "Le Banc de Développé Couché", desc: "Un banc plat fixe...", exercices: "Développé couché...", muscles: "Pectoraux..." },
+        { id: "poulie_vis_a_vis", nom: "La Poulie Vis-à-Vis", desc: "Une immense arche...", exercices: "Écartés...", muscles: "Principalement les pectoraux..." },
+        { id: "lat_pulldown", nom: "Le Tirage Vertical (Lat Pulldown)", desc: "Une machine équipée...", exercices: "Tirage poitrine...", muscles: "Grand dorsal..." },
+        { id: "seated_row", nom: "Le Tirage Horizontal (Seated Row)", desc: "Un siège bas face à un câble...", exercices: "Rowing assis...", muscles: "Épaisseur du dos..." },
+        { id: "leg_press", nom: "La Presse à Cuisses (Leg Press)", desc: "Un siège incliné...", exercices: "Presse à cuisses...", muscles: "Quadriceps..." },
+        { id: "leg_extension_salle", nom: "Le Leg Extension", desc: "Un siège équipé d'un boudin...", exercices: "Extension des genoux...", muscles: "Quadriceps..." },
+        { id: "leg_curl_salle", nom: "Le Leg Curl (Assis ou Allongé)", desc: "Une machine où l'on s'allonge...", exercices: "Flexion des jambes...", muscles: "Ischio-jambiers..." },
+        { id: "smith_machine", nom: "La Smith Machine (Cadre Guidé)", desc: "Une barre olympique emprisonnée...", exercices: "Squat guidé...", muscles: "Tout dépend..." },
+        { id: "pec_deck", nom: "Le Pec Deck / Butterfly", desc: "Un siège vertical...", exercices: "Écartés assis...", muscles: "Pectoraux..." },
+        { id: "hack_squat", nom: "Le Hack Squat", desc: "Une machine inclinée...", exercices: "Squat incliné guidé...", muscles: "Focus extrême..." },
+        { id: "glute_drive", nom: "La machine à Hip Thrust", desc: "Une machine spécifique...", exercices: "Relevé de bassin...", muscles: "Fessiers..." }
+    ];
+
+    let currentCategory = "";
+    let selectedItemConfig = null;
+
+    // Écouteur de l'Auth State pour le Thème
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            const cloudAnswers = await chargerDonneesCloud("userAnswers");
+            if (cloudAnswers && cloudAnswers.currentTheme === "light") {
+                document.body.classList.add("theme-light");
+            } else {
+                document.body.classList.remove("theme-light");
+            }
+        }
+    });
+
+    // Rendre les fonctions accessibles au scope global de la page (HTML onclick)
+    window.retourVersCategories = () => {
+        document.getElementById("view-categorie-details").style.display = "none";
+        document.getElementById("view-biblio-matos").style.display = "block";
+    };
+
+    window.ouvrirCategorieBiblio = (categorie) => {
+        currentCategory = categorie;
+        const container = document.getElementById("items-container");
+        const titleElement = document.getElementById("categorie-title");
+        const descElement = document.getElementById("categorie-desc");
+
+        container.innerHTML = "";
+        document.getElementById("view-biblio-matos").style.display = "none";
+        document.getElementById("view-categorie-details").style.display = "block";
+
+        let liste = [];
+        if (categorie === "street") {
+            titleElement.innerHTML = "🌳 Bibliothèque : Street Workout";
+            descElement.innerText = "Voici l'équipement typique d'extérieur, transportable ou fixe en parcours urbains.";
+            liste = equipementsStreet;
+        } else if (categorie === "maison") {
+            titleElement.innerHTML = "🏠 Bibliothèque : Maison";
+            descElement.innerText = "Voici l'équipement adapté à l'entraînement à domicile.";
+            liste = equipementsMaison;
+        } else if (categorie === "salle") {
+            titleElement.innerHTML = "🏋️ Bibliothèque : Salle de Sport";
+            descElement.innerText = "Découvre les équipements professionnels de musculation classiques, guidés ou à poulies.";
+            liste = equipementsSalle;
+        }
+
+        liste.forEach(item => {
+            container.innerHTML += `
+                <div class="item-card">
+                    <h3>${item.nom}</h3>
+                    <p class="item-detail"><strong>Description :</strong> ${item.desc}</p>
+                    <p class="item-detail"><strong>Exercices :</strong> ${item.exercices}</p>
+                    <p class="item-detail"><strong>Muscles ciblés :</strong> ${item.muscles}</p>
+                    <button class="btn-add-matos" onclick="ouvrirConfigPopup('${item.id}')">➕ Configurer / Ajouter</button>
+                </div>`;
+        });
+    };
+
+    window.ouvrirConfigPopup = (itemId) => {
+        const allItems = [...equipementsStreet, ...equipementsMaison, ...equipementsSalle];
+        const item = allItems.find(e => e.id === itemId);
+        if (!item) return;
+
+        selectedItemConfig = item;
+        document.getElementById("config-title").innerText = `⚙️ Configurer : ${item.nom}`;
+        
+        const fieldContainer = document.getElementById("dynamic-fields-container");
+        fieldContainer.innerHTML = "";
+        let fieldsHTML = "";
+
+        switch (itemId) {
+            case "barre_traction":
+                fieldsHTML = `
+                    <div class="form-group">
+                        <label for="param-type">Type de fixation / Support :</label>
+                        <select id="param-type" required>
+                            <option value="De porte (sans vis)">De porte (sans vis)</option>
+                            <option value="Murale ou Plafond">Fixation Murale / Plafond</option>
+                            <option value="Sur portique extérieur">Sur portique ou cage autoportante</option>
+                        </select>
+                    </div>`;
+                break;
+            case "bandes_elastiques":
+            case "bandes_poignets":
+            case "bandes_poignees":
+                fieldsHTML = `
+                    <div class="form-group">
+                        <label for="param-spec">Couleur / Niveau de résistance :</label>
+                        <input type="text" id="param-spec" placeholder="Ex: Rouge (15kg), Noir (Moyen)..." required>
+                    </div>`;
+                break;
+            case "halteres_reglables":
+            case "halteres_salle":
+            case "barre_salle_rack":
+            case "banc_bench_press":
+            case "leg_press":
+            case "hack_squat":
+            case "glute_drive":
+            case "lat_pulldown":
+            case "seated_row":
+            case "kettlebell":
+            case "medicine_ball":
+            case "sac_a_dos_leste":
+            case "gilet_leste":
+                fieldsHTML = `
+                    <div class="form-group">
+                        <label for="param-spec">Poids de travail ou charge max habituelle (en kg) :</label>
+                        <input type="number" id="param-spec" min="0" step="0.5" placeholder="Ex: 20 ou 80" required>
+                    </div>`;
+                break;
+            default:
+                fieldsHTML = `
+                    <div class="form-group">
+                        <label for="param-spec">Note optionnelle (Numéro de machine, marque, réglage de siège...) :</label>
+                        <input type="text" id="param-spec" placeholder="Ex: Réglage siège cran 3, Marque Matrix...">
+                    </div>`;
+                break;
+        }
+
+        fieldContainer.innerHTML = fieldsHTML;
+
+        const checkboxContainer = document.getElementById("multicat-checkboxes-container");
+        checkboxContainer.innerHTML = "";
+        const categories = [
+            { id: "maison", label: "🏠 Maison" },
+            { id: "salle", label: "🏋️ Salle" },
+            { id: "street", label: "🌳 Street" }
+        ];
+
+        categories.forEach(cat => {
+            if (cat.id !== currentCategory) {
+                checkboxContainer.innerHTML += `
+                    <label class="multicat-item">
+                        <input type="checkbox" class="multicat-checkbox" value="${cat.id}">
+                        ${cat.label}
+                    </label>`;
+            }
+        });
+
+        document.getElementById("popup-config-materiel").style.display = "flex";
+    };
+
+    window.fermerConfigPopup = () => {
+        document.getElementById("popup-config-materiel").style.display = "none";
+    };
+
+    window.validerAjoutMateriel = async (event) => {
+        event.preventDefault();
+        const etat = document.getElementById("input-etat").value;
+        const specValue = document.getElementById("param-spec") ? document.getElementById("param-spec").value : (document.getElementById("param-type") ? document.getElementById("param-type").value : "");
+        
+        const checkboxes = document.querySelectorAll(".multicat-checkbox:checked");
+        let extraCats = [];
+        checkboxes.forEach(cb => extraCats.push(cb.value));
+
+        // SAUVEGARDE RÉELLE VERS LE CLOUD FIREBASE
+        try {
+            const userMaterials = await chargerDonneesCloud("userMaterials") || {};
+            
+            const nvxMateriel = {
+                id: selectedItemConfig.id,
+                nom: selectedItemConfig.nom,
+                spec: specValue || "Standard",
+                etat: etat,
+                dateAjout: new Date().toLocaleDateString('fr-FR')
+            };
+
+            if (!userMaterials[currentCategory]) userMaterials[currentCategory] = [];
+            userMaterials[currentCategory].push(nvxMateriel);
+
+            extraCats.forEach(cat => {
+                if (!userMaterials[cat]) userMaterials[cat] = [];
+                userMaterials[cat].push({ ...nvxMateriel });
+            });
+
+            await sauvegarderDonneesCloud("userMaterials", userMaterials);
+            alert(`Succès ! "${selectedItemConfig.nom}" a bien été ajouté à ton inventaire.`);
+            fermerConfigPopup();
+        } catch (error) {
+            console.error("Erreur lors de la sauvegarde du matériel :", error);
+            alert("🚨 Impossible d'enregistrer l'équipement.");
+        }
+    };
+</script>
+</body>
+</html>

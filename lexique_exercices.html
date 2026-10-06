@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- Fichier Web Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Personnalisation de la barre d'état Android -->
+<meta name="theme-color" content="#ff9900">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script src="theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexique des Exercices</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --accent: #3b82f6;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 20px; max-width: 900px; margin: 0 auto; }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .btn-back { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 0.9rem; transition: background 0.2s; }
+        .btn-back:hover { background: #2d3748; }
+
+        .page-title { font-size: 1.5rem; color: var(--accent); margin-bottom: 5px; }
+        .page-subtitle { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; }
+
+        /* --- BARRE CODE ADMIN --- */
+        .admin-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .admin-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        .admin-input-group label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .admin-input-group input {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 220px;
+        }
+
+        .admin-input-group input:focus {
+            border-color: var(--accent);
+        }
+
+        .admin-badge {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .admin-badge.unlocked {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        /* --- ACCORDÉONS NIVEAU 1 : ZONES PRINCIPALES --- */
+        .accordion-zone {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .accordion-zone[open] { border-color: var(--accent); }
+
+        .zone-summary {
+            padding: 16px 20px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--text-main);
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            transition: background 0.2s;
+        }
+
+        .zone-summary:hover { background: rgba(255, 255, 255, 0.05); color: var(--accent); }
+        .zone-summary::-webkit-details-marker { display: none; }
+        .zone-summary::after { content: "▼"; font-size: 0.8rem; color: var(--text-muted); transition: transform 0.3s ease; }
+        .accordion-zone[open] > .zone-summary::after { transform: rotate(180deg); color: var(--accent); }
+
+        .zone-content {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(15, 23, 42, 0.4);
+        }
+
+        /* --- ACCORDÉONS NIVEAU 2 : SUBDIVISIONS --- */
+        .accordion-subzone {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent-purple);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .subzone-summary {
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .subzone-summary:hover { background: rgba(255, 255, 255, 0.04); color: var(--accent-green); }
+        .subzone-summary::-webkit-details-marker { display: none; }
+        .subzone-summary::after { content: "▶"; font-size: 0.7rem; color: var(--text-muted); transition: transform 0.2s ease; }
+        .accordion-subzone[open] > .subzone-summary::after { transform: rotate(90deg); color: var(--accent-green); }
+
+        .subzone-content {
+            padding: 12px 15px;
+            border-top: 1px dashed var(--border);
+            background: rgba(15, 23, 42, 0.8);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* --- BOUTONS D'EXERCICES (LISTE SANS "VOIR") --- */
+        .exercise-item {
+            display: block;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
+
+        .exercise-item:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            transform: translateX(3px);
+        }
+
+        .placeholder-box {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.85rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- STYLES MODALE / POP-UP --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            max-width: 850px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            padding: 25px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover { color: #ef4444; }
+
+        /* GESTION DE L'AFFICHAGE DE LA SECTION ADMIN (19) */
+        .admin-only {
+            display: none;
+        }
+
+        body.admin-mode .admin-only {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1 class="page-title">📖 Lexique des Exercices</h1>
+            <p class="page-subtitle">Parcours la bibliothèque par zones et subdivisions</p>
+        </div>
+        <button class="btn-back" onclick="window.location.href='tous_les_programmes.html'">🏠 Retour au catalogue</button>
+    </header>
+
+    <!-- ESPACE CODE ADMINISTRATEUR -->
+    <div class="admin-bar">
+        <div class="admin-input-group">
+            <label for="admin-code-input">🔐 Espace Administrateur :</label>
+            <input type="password" id="admin-code-input" placeholder="Entrer le code admin..." oninput="checkAdminCode()">
+        </div>
+        <span id="admin-status" class="admin-badge">🔒 Mode Utilisateur</span>
+    </div>
+
+    <!-- 1. PECS -->
+    <details class="accordion-zone">
+        <summary class="zone-summary">🏋️‍♂️ Pecs</summary>
+        <div class="zone-content">
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Haut</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Pecs Haut ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Bas</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Pecs Bas ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Milieu</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Pecs Milieu ]</div></div>
+            </details>
+        </div>
+    </details>
+
+    <!-- 2. ABDOS -->
+    <details class="accordion-zone">
+        <summary class="zone-summary">🍫 Abdos</summary>
+        <div class="zone-content">
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Haut</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Abdos Haut ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Bas</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Abdos Bas ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Obliques</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Obliques ]</div></div>
+            </details>
+        </div>
+    </details>
+
+    <!-- 3. DOS -->
+    <details class="accordion-zone">
+        <summary class="zone-summary">🔙 Dos</summary>
+        <div class="zone-content">
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Haut et ailes</summary>
+                <div class="subzone-content">
+                    <div class="exercise-item" onclick="openExerciseModal('sheet-rowing-unilateral')">
+                        🚣‍♂️ Rowing unilatéral haltère — 1 ou 2 haltères
+                    </div>
+                  <div class="exercise-item" onclick="openExerciseModal('sheet-pull-over-halteres')">
+    🧘‍♂️ Pull-over haltères — 1 ou 2 haltères
+                  </div>
+                                    <div class="exercise-item" onclick="openExerciseModal('sheet-tractions-prise-large')">
+    Tractions prise large
+                                    </div>
+
+
+                </div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Bas</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Bas du dos ]</div></div>
+            </details>
+        </div>
+    </details>
+
+    <!-- 4. COU -->
+    <details class="accordion-zone">
+        <summary class="zone-summary">🦒 Cou</summary>
+        <div class="zone-content">
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Cou</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Cou ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Trapèzes</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Trapèzes ]</div></div>
+            </details>
+        </div>
+    </details>
+
+    <!-- 5. ÉPAULES -->
+    <details class="accordion-zone">
+        <summary class="zone-summary">🤷 Épaules</summary>
+        <div class="zone-content">
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Avant</summary>
+                <div class="subzone-content"</div>
+
+
+
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Côté</summary>
+                <div class="subzone-content"></div>
+                            <div class="exercise-item" onclick="openExerciseModal('sheet-elevation-laterale-unilaterale')">
+    🤷‍♂️ Élévation latérale unilatérale — 1 haltère
+                            </div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Arrière</summary>
+                <div class="subzone-content"></div>
+              <div class="exercise-item" onclick="openExerciseModal('sheet-oiseau-unilateral-buste-penche')">
+    🦅 Oiseau unilatéral buste penché — 1 haltère
+              </div>
+
+
+            </details>
+        </div>
+    </details>
+
+    <!-- 6. BRAS -->
+    <details class="accordion-zone">
+        <summary class="zone-summary">💪 Bras</summary>
+        <div class="zone-content">
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Biceps et brachial</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Biceps et brachial ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Triceps</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Triceps ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Avant-bras et grip-main</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Avant-bras et grip-main ]</div></div>
+            </details>
+        </div>
+    </details>
+
+    <!-- 7. JAMBES -->
+    <details class="accordion-zone">
+        <summary class="zone-summary">🦵 Jambes</summary>
+        <div class="zone-content">
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Quad</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Quadriceps ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Ischios</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Ischio-jambiers ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Fessiers</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Fessiers ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Mollets</summary>
+                <div class="subzone-content"></div>
+              <div class="exercise-item" onclick="openExerciseModal('sheet-calf-raise-unilateral')">
+    🦵 Extensions des mollets debout unilatérales — 1 ou 2 haltères
+              </div>
+
+
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Abducteurs et adducteurs</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Abducteurs et Adducteurs ]</div></div>
+            </details>
+        </div>
+    </details>
+
+    <!-- 8. GAINAGE -->
+    <details class="accordion-zone">
+        <summary class="zone-summary">🛡️ Gainage</summary>
+        <div class="zone-content">
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Statique</summary>
+                <div class="subzone-content"></div>
+              <div class="exercise-item" onclick="openExerciseModal('sheet-hollow-body-hold-rock')">
+    🧱 Hollow Body Hold / Hollow Rock — Poids du corps
+              </div>
+
+
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Dynamique</summary>
+                <div class="subzone-content"></div>
+              <div class="exercise-item" onclick="openExerciseModal('sheet-plank-to-push-up')">
+    🔄 Plank-to-Push-up — Poids du corps
+              </div>
+
+
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Équilibre</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Gainage équilibre ]</div></div>
+            </details>
+        </div>
+    </details>
+
+    <!-- 9. CARDIO -->
+    <details class="accordion-zone">
+        <summary class="zone-summary">🫀 Cardio</summary>
+        <div class="zone-content">
+            <div class="placeholder-box">[ Emplacement fiches : Cardio ]</div>
+        </div>
+    </details>
+
+    <!-- 10. ÉTIREMENTS -->
+    <details class="accordion-zone">
+        <summary class="zone-summary">🧘 Étirements</summary>
+        <div class="zone-content">
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Haut</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Étirements haut ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Bas</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Étirements bas ]</div></div>
+            </details>
+        </div>
+    </details>
+
+    <!-- 11. ÉCHAUFFEMENTS -->
+    <details class="accordion-zone">
+        <summary class="zone-summary">🔥 Échauffements</summary>
+        <div class="zone-content">
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Pecs</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Échauffement Pecs ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Bras</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Échauffement Bras ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Abdos</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Échauffement Abdos ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Dos</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Échauffement Dos ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Jambes</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Échauffement Jambes ]</div></div>
+            </details>
+            <details class="accordion-subzone">
+                <summary class="subzone-summary">Cou</summary>
+                <div class="subzone-content"><div class="placeholder-box">[ Emplacement fiches : Échauffement Cou ]</div></div>
+            </details>
+        </div>
+    </details>
+
+    <!-- STRUCTURE POP-UP (MODALE) -->
+    <div id="exercise-modal" class="modal-overlay" onclick="closeExerciseModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeExerciseModalDirect()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- RÉSERVOIR CACHÉ DES FICHES D'EXERCICES -->
+    <div style="display: none;">
+
+        <!-- FICHE : ROWING UNILATÉRAL HALTÈRE -->
+        <div id="sheet-rowing-unilateral">
+            <div style="border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: 20px;">
+                <h2 style="color: var(--accent); font-size: 1.4rem; margin-bottom: 5px;">🚣‍♂️ Rowing unilatéral haltère — 1 ou 2 haltères</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Tirage horizontal polyarticulaire • Matériel : 1 ou 2 haltères</p>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">1. Matériel & Variantes</h3>
+                <p style="margin-bottom: 8px;"><strong>Matériel :</strong> 1 ou 2 haltères.</p>
+                <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem; color: var(--text-muted);">
+                    <li><strong style="color: var(--text-main);">1 haltère (version recommandée) :</strong> Réalisé avec un seul haltère, un bras à la fois. L'autre main peut prendre appui sur un banc, une chaise ou la cuisse. Permet une plus grande amplitude et une meilleure concentration sur le muscle travaillé.</li>
+                    <li><strong style="color: var(--text-main);">2 haltères :</strong> Un haltère dans chaque main. Les bras travaillent alternativement : pendant qu'un bras effectue le tirage, l'autre reste tendu ou maintient la position. Demande davantage de gainage et de stabilité, mais n'apporte généralement pas plus de bénéfices que la version à 1 haltère.</li>
+                </ul>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">2. Objectif principal</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 0.85rem;">
+                    <div>💪 <strong>Force :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+                    <div>⚡ <strong>Puissance / Explosivité :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</div>
+                    <div>📈 <strong>Volume musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+                    <div>🧱 <strong>Densité musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+                    <div>🔋 <strong>Endurance musculaire :</strong> ⭐⭐⭐⭐⭐⭐☆☆☆☆ (6/10)</div>
+                    <div>🎯 <strong>Contrôle musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+                    <div>⏱️ <strong>Réactivité :</strong> ⭐⭐☆☆☆☆☆☆☆☆ (2/10)</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">3. Description de l'exercice</h3>
+                <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 10px;">
+                    Le rowing unilatéral est un exercice polyarticulaire de tirage horizontal réalisé avec un seul bras à la fois.<br>
+                    Le mouvement consiste à tirer un haltère vers le côté du buste en gardant le dos stable, puis à redescendre lentement jusqu'à l'extension complète du bras.<br>
+                    Le travail unilatéral permet une excellente connexion avec le muscle et facilite la correction des déséquilibres de force entre les deux côtés.
+                </p>
+                <p style="font-size: 0.9rem; color: var(--text-muted);"><strong>Sollicitations principales :</strong> Grand dorsal, rhomboïdes, trapèzes moyens, deltoïde postérieur. Les biceps, les avant-bras et les muscles du tronc participent également au mouvement.</p>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">4. Position de départ</h3>
+                <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.5; color: var(--text-muted);">
+                    <li><strong>Placement des pieds :</strong> Écartés à la largeur des hanches, genoux légèrement fléchis, position stable.</li>
+                    <li><strong>Placement du haut du corps :</strong> Buste penché entre 30° et 45°, dos neutre, poitrine ouverte, abdominaux contractés, tête dans l'alignement de la colonne.</li>
+                    <li><strong>Placement des bras (1 haltère) :</strong> Une main tient l'haltère, l'autre peut prendre appui sur un support ou rester sur la cuisse.</li>
+                    <li><strong>Placement des bras (2 haltères) :</strong> Un haltère dans chaque main. Un seul bras effectue le mouvement pendant que l'autre reste tendu.</li>
+                </ul>
+            </div>
+
+            <!-- 5. EXÉCUTION -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">5. Exécution</h3>
+                <ol style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">
+                    <li><strong>Phase de tirage :</strong> Inspire. Commence le mouvement en rapprochant légèrement l'omoplate. Tire ensuite le coude vers l'arrière. L'haltère remonte près du buste, le coude reste proche du corps.</li>
+                    <li><strong>Position haute :</strong> Contracte fortement le dos. L'omoplate est rapprochée de la colonne. Évite de tourner le buste.</li>
+                    <li><strong>Phase descendante :</strong> Expire lentement. Redescends l'haltère de manière contrôlée. Retrouve une extension presque complète du bras. Garde les épaules stables, puis recommence.</li>
+                </ol>
+            </div>
+
+            <!-- 6. RESPIRATION -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">6. Respiration</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;"><strong>Technique classique :</strong> Montée ➔ Expiration | Descente ➔ Inspiration.</p>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;"><strong>Effort intense :</strong> Une légère retenue d'air peut aider à stabiliser le tronc.</p>
+                <p style="font-size: 0.9rem; color: #ef4444;">❌ <strong>À éviter :</strong> Bloquer sa respiration toute la série | Relâcher le gainage.</p>
+            </div>
+
+            <!-- 7. TEMPO -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">7. Tempo (Descente - Pause basse - Montée - Pause haute)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+                    <div>• <strong>Classique (2-0-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+                    <div>• <strong>Hypertrophie (3-1-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+                    <div>• <strong>Force (2-1-X-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+                    <div>• <strong>Explosif (1-0-X-0) :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</div>
+                    <div>• <strong>Endurance (1-0-1-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</div>
+                    <div>• <strong>Contrôle (5-2-3-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+                    <div>• <strong>Excentrique (6-0-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</div>
+                </div>
+            </div>
+
+            <!-- 8. CONSEILS & 9. ERREURS -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <div style="background: rgba(16, 185, 129, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                    <h4 style="color: var(--accent-green); font-size: 0.95rem; margin-bottom: 6px;">💡 8. Conseils techniques</h4>
+                    <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                        <li>Commence chaque répétition par l'omoplate.</li>
+                        <li>Tire avec le coude, pas avec la main.</li>
+                        <li>Garde le buste immobile.</li>
+                        <li>Contrôle la descente et contracte fortement en haut.</li>
+                        <li>Évite de hausser l'épaule et utilise une amplitude complète.</li>
+                    </ul>
+                </div>
+                <div style="background: rgba(239, 68, 68, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                    <h4 style="color: #ef4444; font-size: 0.95rem; margin-bottom: 6px;">❌ 9. Erreurs fréquentes</h4>
+                    <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                        <li>Tourner le buste / donner un élan.</li>
+                        <li>Hausser l'épaule.</li>
+                        <li>Tirer uniquement avec le bras.</li>
+                        <li>Descendre trop vite ou arrondir le dos.</li>
+                        <li>Utiliser une charge excessive.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 10. MUSCLES -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">10. Muscles sollicités</h3>
+                <div style="font-size: 0.85rem; line-height: 1.6;">
+                    <p><strong style="color: var(--accent);">Principaux :</strong> Grand dorsal ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) | Rhomboïdes ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10) | Trapèze moyen ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</p>
+                    <p><strong style="color: var(--accent-purple);">Secondaires :</strong> Deltoïde postérieur (7/10) | Biceps brachial (7/10) | Brachial (6/10) | Trapèze inférieur (6/10)</p>
+                    <p><strong style="color: var(--text-muted);">Stabilisateurs :</strong> Érecteurs du rachis (6/10) | Obliques (6/10) | Transverse (7/10) | Avant-bras (8/10)</p>
+                </div>
+            </div>
+
+            <!-- 11, 12, 13 MATÉRIEL & RÉGLAGES -->
+            <div style="margin-bottom: 20px; font-size: 0.88rem; color: var(--text-muted);">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">11, 12 & 13. Matériel & Réglages</h3>
+                <p><strong>Matériel alternatif :</strong> Kettlebell, sac lesté, poulie basse, élastique.</p>
+                <p><strong>Option d'appui :</strong> Avec appui (plus stable, permet d'utiliser plus lourd) | Sans appui (demande plus de gainage).</p>
+                <p><strong>Trajectoire du coude :</strong> Coude proche du corps (plus de grand dorsal) | Coude légèrement ouvert (plus de haut du dos).</p>
+            </div>
+
+            <!-- 14. CARACTÉRISTIQUES -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">14. Caractéristiques</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+                    <div><strong>Type :</strong> Polyarticulaire</div>
+                    <div><strong>Mouvement :</strong> Tirage horizontal</div>
+                    <div><strong>Plan :</strong> Horizontal</div>
+                    <div><strong>Chaîne :</strong> Postérieure</div>
+                    <div><strong>Résistance :</strong> Charge externe</div>
+                    <div><strong>Mode :</strong> Unilatéral</div>
+                    <div><strong>Stabilité :</strong> Moyenne</div>
+                    <div><strong>Mobilité :</strong> Faible</div>
+                    <div><strong>Amplitude :</strong> Grande</div>
+                    <div><strong>Progression :</strong> Excellente</div>
+                </div>
+            </div>
+
+            <!-- 15. COMPATIBILITÉ -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">15. Compatibilité</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    ✅ <strong>Compatible :</strong> Circuit, Superset, Bi-set, Tri-set, Rest-pause, Pyramide, Pyramide inversée, Pré-fatigue, Post-fatigue.<br>
+                    ⚠️ <strong>À adapter / Précaution :</strong> Échauffement, Giant set, EMOM, AMRAP, Finisher.<br>
+                    ❌ <strong>Incompatible / Peu adapté :</strong> Tabata.
+                </p>
+            </div>
+
+            <!-- 16 & 17 PROGRESSION & RÉGRESSION -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; font-size: 0.85rem;">
+                <div>
+                    <h4 style="color: var(--accent);">📈 16. Progression</h4>
+                    <p style="color: var(--text-muted);">Augmenter la charge / répétitions / séries • Ajouter une pause en contraction • Ralentir la descente • Supprimer l'appui • Utiliser une amplitude maximale.</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--accent-purple);">📉 17. Régression</h4>
+                    <p style="color: var(--text-muted);">Réduire la charge • Utiliser un appui stable • Réduire l'amplitude • Relever légèrement le buste • Augmenter le temps de repos.</p>
+                </div>
+            </div>
+
+            <!-- 18. PERFORMANCES DE RÉFÉRENCE -->
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">18. Performances de référence (Exécution stricte)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-size: 0.85rem; text-align: center;">
+                    <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌱 <strong>Débutant</strong><br>10 à 15 reps</div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌿 <strong>Intermédiaire</strong><br>8 à 12 reps</div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌳 <strong>Avancé</strong><br>6 à 10 reps lourdes</div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">👑 <strong>Expert</strong><br>Charge élevée + contrôle</div>
+                </div>
+            </div>
+
+            <!-- 19. INFORMATIONS POUR L'APPLICATION & COMMENTAIRES (ADMIN UNIQUEMENT) -->
+            <div class="admin-only" style="background: rgba(59, 130, 246, 0.08); border: 1px dashed var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem;">
+                <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 8px;">⚙️ 19. Données internes & Commentaires (Admin)</h3>
+                <ul style="list-style: none; line-height: 1.6; color: var(--text-muted); margin-bottom: 12px;">
+                    <li>🧠 <strong>Fatigue nerveuse :</strong> ⭐⭐⭐⭐⭐☆☆☆☆☆ (5/10)</li>
+                    <li>💥 <strong>Fatigue musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</li>
+                    <li>🛡️ <strong>Risque de blessure :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</li>
+                    <li>⏱️ <strong>Récupération conseillée :</strong> 48 heures</li>
+                    <li>🎯 <strong>Moment idéal :</strong> Début (force) | Milieu (hypertrophie) | Fin (séries longues)</li>
+                    <li>🔥 <strong>Post-fatigue intense :</strong> Grand dorsal, rhomboïdes, trapèzes moyens, deltoïdes postérieurs, biceps</li>
+                    <li>⚠️ <strong>À éviter juste après :</strong> Rowing lourd supplémentaire, Soulevé de terre lourd, autres tirages horizontaux intenses</li>
+                    <li>⭐ <strong>Scores globaux :</strong> Polyvalence (9/10) | Accessibilité (8/10) | Construction musculaire (9/10) | Développement du dos (10/10) | Apprentissage technique (9/10)</li>
+                </ul>
+                <div style="border-top: 1px solid var(--border); padding-top: 10px; font-style: italic; color: var(--text-muted);">
+                    <p>💬 <strong>Commentaires :</strong> Le rowing unilatéral est l'un des meilleurs exercices pour développer l'épaisseur du dos et corriger les déséquilibres entre le côté droit et le côté gauche. La version à 1 haltère est la plus pertinente dans la majorité des cas : elle offre une meilleure amplitude, une meilleure stabilité et une excellente connexion avec le grand dorsal.</p>
+                </div>
+            </div>
+
+        </div>
+      <!-- FICHE : PULL-OVER HALTÈRES -->
+<div id="sheet-pull-over-halteres">
+    <div style="border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: 20px;">
+        <h2 style="color: var(--accent); font-size: 1.4rem; margin-bottom: 5px;">🧘‍♂️ Pull-over haltères — 1 ou 2 haltères</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Extension/Flexion des épaules polyarticulaire • Matériel : 1 ou 2 haltères, Banc</p>
+    </div>
+
+    <!-- 1. MATÉRIEL & VARIANTES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">1. Matériel & Variantes</h3>
+        <p style="margin-bottom: 8px;"><strong>Matériel :</strong> 1 ou 2 haltères.</p>
+        <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem; color: var(--text-muted);">
+            <li><strong style="color: var(--text-main);">1 haltère (version recommandée) :</strong> Haltère tenu à deux mains par l'une des extrémités. C'est la version la plus utilisée, permettant une grande amplitude et une bonne stabilité.</li>
+            <li><strong style="color: var(--text-main);">2 haltères :</strong> Un haltère dans chaque main, les bras restent parallèles pendant tout le mouvement. Demande davantage de stabilité des épaules et permet une légère augmentation de la charge totale, mais n'apporte pas de bénéfice majeur par rapport à la version à 1 haltère.</li>
+        </ul>
+    </div>
+
+    <!-- 2. OBJECTIF PRINCIPAL -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">2. Objectif principal</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 0.85rem;">
+            <div>💪 <strong>Force :</strong> ⭐⭐⭐⭐⭐⭐☆☆☆☆ (6/10)</div>
+            <div>⚡ <strong>Puissance / Explosivité :</strong> ⭐⭐☆☆☆☆☆☆☆☆ (2/10)</div>
+            <div>📈 <strong>Volume musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>🧱 <strong>Densité musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>🔋 <strong>Endurance musculaire :</strong> ⭐⭐⭐⭐⭐⭐☆☆☆☆ (6/10)</div>
+            <div>🎯 <strong>Contrôle musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>⏱️ <strong>Réactivité :</strong> ⭐☆☆☆☆☆☆☆☆☆ (1/10)</div>
+        </div>
+    </div>
+
+    <!-- 3. DESCRIPTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">3. Description de l'exercice</h3>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 10px;">
+            Le pull-over est un exercice polyarticulaire réalisé en position allongée qui combine une extension des épaules avec une légère flexion des coudes.<br>
+            Selon la technique utilisée, il peut mettre davantage l'accent sur les pectoraux ou sur le grand dorsal. Le mouvement consiste à amener un ou deux haltères derrière la tête, puis à les ramener au-dessus de la poitrine de manière contrôlée.
+        </p>
+        <p style="font-size: 0.9rem; color: var(--text-muted);"><strong>Sollicitations principales :</strong> Les pectoraux, le grand dorsal et le dentelé antérieur. Les triceps et les muscles stabilisateurs des épaules participent également au mouvement.</p>
+    </div>
+
+    <!-- 4. POSITION DE DÉPART -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">4. Position de départ</h3>
+        <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.5; color: var(--text-muted);">
+            <li><strong>Placement du corps :</strong> Allongé sur un banc, pieds bien ancrés au sol, dos neutre, abdominaux contractés, épaules stables.</li>
+            <li><strong>Placement des bras :</strong> Les bras sont presque tendus, coudes légèrement fléchis. Cette flexion reste constante pendant tout le mouvement.</li>
+            <li><strong>Placement de la charge (1 haltère) :</strong> Tenir l'haltère à deux mains par l'une des extrémités, placé au-dessus de la poitrine.</li>
+            <li><strong>Placement de la charge (2 haltères) :</strong> Un haltère dans chaque main, paumes se faisant face, haltères parallèles.</li>
+        </ul>
+    </div>
+
+    <!-- 5. EXÉCUTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">5. Exécution</h3>
+        <ol style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">
+            <li><strong>Phase descendante :</strong> Inspire. Descends lentement les haltères derrière la tête. Le mouvement provient principalement des épaules. Les coudes restent légèrement fléchis. Descends jusqu'à ressentir un bon étirement, sans douleur.</li>
+            <li><strong>Position basse :</strong> Conserve une courte pause. Les épaules restent stables. Ne relâche pas complètement la tension.</li>
+            <li><strong>Phase montante :</strong> Expire. Ramène les haltères au-dessus de la poitrine. Contracte les pectoraux et les dorsaux. Contrôle toute la remontée.</li>
+        </ol>
+    </div>
+
+    <!-- 6. RESPIRATION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">6. Respiration</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;"><strong>Technique classique :</strong> Descente ➔ Inspiration | Montée ➔ Expiration.</p>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;"><strong>Effort intense :</strong> Une courte retenue d'air peut améliorer la stabilité.</p>
+        <p style="font-size: 0.9rem; color: #ef4444;">❌ <strong>À éviter :</strong> Bloquer complètement la respiration | Respirer de manière irregular.</p>
+    </div>
+
+    <!-- 7. TEMPO -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">7. Tempo (Descente - Pause basse - Montée - Pause haute)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div>• <strong>Classique (3-1-2-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>• <strong>Hypertrophie (4-2-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>• <strong>Force (3-1-X-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</div>
+            <div>• <strong>Explosif (1-0-X-0) :</strong> ⭐⭐☆☆☆☆☆☆☆☆ (2/10)</div>
+            <div>• <strong>Endurance (2-0-2-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</div>
+            <div>• <strong>Contrôle (5-2-3-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>• <strong>Excentrique (6-1-2-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+        </div>
+    </div>
+
+    <!-- 8. CONSEILS & 9. ERREURS -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <div style="background: rgba(16, 185, 129, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <h4 style="color: var(--accent-green); font-size: 0.95rem; margin-bottom: 6px;">💡 8. Conseils techniques</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Garde une légère flexion des coudes.</li>
+                <li>Le mouvement vient des épaules, pas des coudes.</li>
+                <li>Contrôle toute la descente et recherche un étirement confortable.</li>
+                <li>Garde les épaules basses.</li>
+                <li>Contracte volontairement les pectoraux ou les dorsaux en fin de mouvement.</li>
+                <li>Évite une charge trop lourde.</li>
+            </ul>
+        </div>
+        <div style="background: rgba(239, 68, 68, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+            <h4 style="color: #ef4444; font-size: 0.95rem; margin-bottom: 6px;">❌ 9. Erreurs fréquentes</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Plier excessivement les coudes.</li>
+                <li>Descendre trop bas / aller trop vite.</li>
+                <li>Utiliser l'élan ou choisir une charge excessive.</li>
+                <li>Cambrer fortement le dos.</li>
+                <li>Relâcher les épaules.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 10. MUSCLES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">10. Muscles sollicités</h3>
+        <div style="font-size: 0.85rem; line-height: 1.6;">
+            <p><strong style="color: var(--accent);">Principaux :</strong> Grand pectoral (Haut 6/10 | Milieu 8/10 | Bas 5/10) | Grand dorsal ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</p>
+            <p><strong style="color: var(--accent-purple);">Secondaires :</strong> Dentelé antérieur (7/10) | Grand rond (6/10) | Triceps chef long (5/10)</p>
+            <p><strong style="color: var(--text-muted);">Stabilisateurs :</strong> Coiffe des rotateurs (6/10) | Transverse (5/10) | Érecteurs du rachis (4/10)</p>
+        </div>
+    </div>
+
+    <!-- 11, 12, 13 MATÉRIEL & RÉGLAGES -->
+    <div style="margin-bottom: 20px; font-size: 0.88rem; color: var(--text-muted);">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">11, 12 & 13. Matériel & Réglages</h3>
+        <p><strong>Matériel requis :</strong> 1 ou 2 haltères, un banc.</p>
+        <p><strong>Matériel alternatif :</strong> Barre EZ, Kettlebell, Disque, Élastique.</p>
+        <p><strong>Option d'haltères :</strong> 1 haltère (recommandé, plus stable) | 2 haltères (plus de stabilité demandée).</p>
+        <p><strong>Amplitude :</strong> Grande (plus d'étirement, plus difficile) | Réduite (débutants).</p>
+        <p><strong>Flexion des coudes :</strong> Faible (accent pecs/dorsaux) | Plus importante (plus d'implication des triceps).</p>
+    </div>
+
+    <!-- 14. CARACTÉRISTIQUES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">14. Caractéristiques</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div><strong>Type :</strong> Polyarticulaire</div>
+            <div><strong>Mouvement :</strong> Extension/Flexion des épaules</div>
+            <div><strong>Plan :</strong> Sagittal</div>
+            <div><strong>Chaîne :</strong> Antérieure et postérieure</div>
+            <div><strong>Résistance :</strong> Charge externe</div>
+            <div><strong>Travail :</strong> Bilatéral</div>
+            <div><strong>Unilatéral :</strong> Non</div>
+            <div><strong>Stabilité :</strong> Moyenne</div>
+            <div><strong>Mobilité :</strong> Moyenne à élevée</div>
+            <div><strong>Amplitude :</strong> Grande</div>
+            <div><strong>Progression :</strong> Bonne</div>
+        </div>
+    </div>
+
+    <!-- 15. COMPATIBILITÉ -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">15. Compatibilité</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+            ✅ <strong>Compatible :</strong> Circuit, Superset, Bi-set, Tri-set, Rest-pause, Pyramide, Pyramide inversée, Pré-fatigue, Post-fatigue.<br>
+            ⚠️ <strong>À adapter / Précaution :</strong> Échauffement, Giant set, EMOM, Finisher.<br>
+            ❌ <strong>Incompatible / Peu adapté :</strong> AMRAP, Tabata.
+        </p>
+    </div>
+
+    <!-- 16 & 17 PROGRESSION & RÉGRESSION -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; font-size: 0.85rem;">
+        <div>
+            <h4 style="color: var(--accent);">📈 16. Progression</h4>
+            <p style="color: var(--text-muted);">Augmenter la charge / répétitions / séries • Augmenter progressivement l'amplitude • Ajouter une pause en position basse • Ralentir la phase descendante.</p>
+        </div>
+        <div>
+            <h4 style="color: var(--accent-purple);">📉 17. Régression</h4>
+            <p style="color: var(--text-muted);">Réduire la charge • Réduire l'amplitude • Utiliser un seul haltère léger • Augmenter le temps de repos.</p>
+        </div>
+    </div>
+
+    <!-- 18. PERFORMANCES DE RÉFÉRENCE -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">18. Performances de référence (Exécution stricte)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-size: 0.85rem; text-align: center;">
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌱 <strong>Débutant</strong><br>12 à 15 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌿 <strong>Intermédiaire</strong><br>8 à 12 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌳 <strong>Avancé</strong><br>6 à 10 reps lourd</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">👑 <strong>Expert</strong><br>Charges élevées + contrôle</div>
+        </div>
+    </div>
+
+    <!-- 19. INFORMATIONS POUR L'APPLICATION & COMMENTAIRES (ADMIN UNIQUEMENT) -->
+    <div class="admin-only" style="background: rgba(59, 130, 246, 0.08); border: 1px dashed var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem;">
+        <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 8px;">⚙️ 19. Données internes & Commentaires (Admin)</h3>
+        <ul style="list-style: none; line-height: 1.6; color: var(--text-muted); margin-bottom: 12px;">
+            <li>🧠 <strong>Fatigue nerveuse :</strong> ⭐⭐⭐⭐☆☆☆☆☆☆ (4/10)</li>
+            <li>💥 <strong>Fatigue musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</li>
+            <li>🛡️ <strong>Risque de blessure :</strong> ⭐⭐⭐⭐☆☆☆☆☆☆ (4/10)</li>
+            <li>⏱️ <strong>Récupération conseillée :</strong> 48 heures</li>
+            <li>🎯 <strong>Moment idéal :</strong> Début (activation pecs/dos) | Milieu (hypertrophie) | Fin (étirement actif)</li>
+            <li>🔥 <strong>Muscles sollicités après exercice :</strong> Grand pectoral, Grand dorsal, Dentelé antérieur, Grand rond</li>
+            <li>⚠️ <strong>À éviter juste après :</strong> Développé couché très lourd si les épaules sont fatiguées, Tirages lourds sollicitant fortement le grand dorsal</li>
+            <li>⭐ <strong>Scores globaux :</strong> Polyvalence (8/10) | Accessibilité (7/10) | Construction musculaire (8/10) | Étirement musculaire (10/10) | Apprentissage technique (8/10)</li>
+        </ul>
+        <div style="border-top: 1px solid var(--border); padding-top: 10px; font-style: italic; color: var(--text-muted);">
+            <p>💬 <strong>Commentaires :</strong> Le pull-over est un exercice atypique qui sollicite à la fois les pectoraux et le grand dorsal. L'accent dépend principalement de la trajectoire et de l'intention du mouvement. La version à 1 haltère est la plus répandue et généralement la plus pratique. La version à 2 haltères est possible mais offre peu d'avantages supplémentaires. La mobilité des épaules est essentielle : il ne faut jamais chercher une amplitude qui provoque une douleur ou une perte de contrôle.</p>
+        </div>
+    </div>
+
+</div>
+      <!-- FICHE : ÉLÉVATION LATÉRALE UNILATÉRALE -->
+<div id="sheet-elevation-laterale-unilaterale">
+    <div style="border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: 20px;">
+        <h2 style="color: var(--accent); font-size: 1.4rem; margin-bottom: 5px;">🤷‍♂️ Élévation latérale unilatérale — 1 haltère</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Abduction de l'épaule (Isolation) • Matériel : 1 haltère</p>
+    </div>
+
+    <!-- 1. MATÉRIEL & VARIANTES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">1. Matériel & Variantes</h3>
+        <p style="margin-bottom: 8px;"><strong>Matériel :</strong> 1 haltère.</p>
+        <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem; color: var(--text-muted);">
+            <li><strong style="color: var(--text-main);">Debout :</strong> Version classique. Demande davantage de gainage et permet une exécution naturelle.</li>
+            <li><strong style="color: var(--text-main);">Assis :</strong> Réduit l'utilisation de l'élan et favorise une meilleure isolation.</li>
+            <li><strong style="color: var(--text-main);">Avec appui :</strong> Une main s'appuie sur un support. Permet de mieux se concentrer sur le deltoïde et améliore la stabilité.</li>
+        </ul>
+    </div>
+
+    <!-- 2. OBJECTIF PRINCIPAL -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">2. Objectif principal</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 0.85rem;">
+            <div>💪 <strong>Force :</strong> ⭐⭐⭐⭐☆☆☆☆☆☆ (4/10)</div>
+            <div>⚡ <strong>Puissance / Explosivité :</strong> ⭐☆☆☆☆☆☆☆☆☆ (1/10)</div>
+            <div>📈 <strong>Volume musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>🧱 <strong>Densité musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>🔋 <strong>Endurance musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>🎯 <strong>Contrôle musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>⏱️ <strong>Réactivité :</strong> ⭐☆☆☆☆☆☆☆☆☆ (1/10)</div>
+        </div>
+    </div>
+
+    <!-- 3. DESCRIPTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">3. Description de l'exercice</h3>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 10px;">
+            L'élévation latérale unilatérale est un exercice d'isolation destiné au développement du faisceau moyen du deltoïde.<br>
+            Le mouvement consiste à lever un haltère sur le côté jusqu'à environ la hauteur des épaules, puis à le redescendre lentement. Le travail unilatéral permet une meilleure concentration sur le muscle, corrige les déséquilibres entre les deux épaules et améliore la connexion muscle-esprit.
+        </p>
+        <p style="font-size: 0.9rem; color: var(--text-muted);"><strong>Sollicitation principale :</strong> Deltoïde moyen.<br>
+        <strong>Stabilisateurs :</strong> Deltoïdes antérieur et postérieur, trapèzes et muscles de la coiffe des rotateurs.</p>
+    </div>
+
+    <!-- 4. POSITION DE DÉPART -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">4. Position de départ</h3>
+        <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.5; color: var(--text-muted);">
+            <li><strong>Placement des pieds :</strong> Debout, pieds largeur des hanches, genoux légèrement fléchis, poids réparti sur les deux jambes.</li>
+            <li><strong>Placement du haut du corps :</strong> Dos droit, poitrine ouverte, abdominaux contractés, épaules basses, tête dans l'alignement de la colonne.</li>
+            <li><strong>Placement du bras :</strong> Le bras tenant l'haltère est presque tendu, coude légèrement fléchi, paume tournée vers la cuisse. L'autre bras reste libre ou prend appui sur un support.</li>
+        </ul>
+    </div>
+
+    <!-- 5. EXÉCUTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">5. Exécution</h3>
+        <ol style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">
+            <li><strong>Phase de montée :</strong> Expire. Lève lentement le bras sur le côté. Le coude guide le mouvement, le poignet reste dans l'alignement de l'avant-bras. Monte jusqu'à la hauteur de l'épaule.</li>
+            <li><strong>Position haute :</strong> Contracte fortement le deltoïde. Évite de hausser l'épaule et marque une courte pause.</li>
+            <li><strong>Phase descendante :</strong> Inspire. Redescends lentement et contrôle complètement la charge sans jamais laisser l'haltère tomber.</li>
+        </ol>
+    </div>
+
+    <!-- 6. RESPIRATION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">6. Respiration</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;"><strong>Technique classique :</strong> Montée ➔ Expiration | Descente ➔ Inspiration.</p>
+        <p style="font-size: 0.9rem; color: #ef4444;">❌ <strong>À éviter :</strong> Bloquer la respiration | Respirer de façon désordonnée.</p>
+    </div>
+
+    <!-- 7. TEMPO -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">7. Tempo (Descente - Pause basse - Montée - Pause haute)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div>• <strong>Classique (2-0-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>• <strong>Hypertrophie (3-1-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>• <strong>Force (2-1-X-1) :</strong> ⭐⭐⭐⭐☆☆☆☆☆☆ (4/10)</div>
+            <div>• <strong>Explosif (1-0-X-0) :</strong> ⭐☆☆☆☆☆☆☆☆☆ (1/10)</div>
+            <div>• <strong>Endurance (1-0-1-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>• <strong>Contrôle (5-2-3-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>• <strong>Excentrique (6-0-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+        </div>
+    </div>
+
+    <!-- 8. CONSEILS & 9. ERREURS -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <div style="background: rgba(16, 185, 129, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <h4 style="color: var(--accent-green); font-size: 0.95rem; margin-bottom: 6px;">💡 8. Conseils techniques</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Lève le coude avant la main et garde une légère flexion.</li>
+                <li>Maintiens les épaules basses et évite tout mouvement d'élan.</li>
+                <li>Contrôle toute la descente.</li>
+                <li>Utilise une charge permettant une technique parfaite.</li>
+                <li>Cherche à contracter le deltoïde en haut du mouvement.</li>
+            </ul>
+        </div>
+        <div style="background: rgba(239, 68, 68, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+            <h4 style="color: #ef4444; font-size: 0.95rem; margin-bottom: 6px;">❌ 9. Erreurs fréquentes</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Hausser les épaules ou pencher fortement le buste.</li>
+                <li>Utiliser l'élan du buste.</li>
+                <li>Monter au-dessus des épaules.</li>
+                <li>Plier excessivement le coude.</li>
+                <li>Utiliser une charge trop lourde ou descendre trop vite.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 10. MUSCLES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">10. Muscles sollicités</h3>
+        <div style="font-size: 0.85rem; line-height: 1.6;">
+            <p><strong style="color: var(--accent);">Principal :</strong> Deltoïde moyen ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</p>
+            <p><strong style="color: var(--accent-purple);">Secondaires :</strong> Supra-épineux (5/10) | Deltoïde antérieur (4/10) | Deltoïde postérieur (3/10)</p>
+            <p><strong style="color: var(--text-muted);">Stabilisateurs :</strong> Coiffe des rotateurs (6/10) | Trapèze supérieur (4/10) | Trapèze moyen (3/10) | Dentelé antérieur (3/10) | Transverse (3/10)</p>
+        </div>
+    </div>
+
+    <!-- 11, 12, 13 MATÉRIEL & RÉGLAGES -->
+    <div style="margin-bottom: 20px; font-size: 0.88rem; color: var(--text-muted);">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">11, 12 & 13. Matériel & Réglages</h3>
+        <p><strong>Matériel requis :</strong> 1 haltère.</p>
+        <p><strong>Matériel alternatif :</strong> Poulie basse, Élastique, Kettlebell légère, Bouteille d'eau lestée.</p>
+        <p><strong>Position :</strong> Debout (fonctionnel/gainage) | Assis (isolation/sans élan) | Avec appui (stabilité maximale).</p>
+        <p><strong>Amplitude :</strong> Jusqu'à l'épaule (optimale) | Plus basse (facile) | Au-dessus de l'épaule (déconseillée).</p>
+    </div>
+
+    <!-- 14. CARACTÉRISTIQUES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">14. Caractéristiques</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div><strong>Type :</strong> Isolation</div>
+            <div><strong>Mouvement :</strong> Abduction de l'épaule</div>
+            <div><strong>Plan :</strong> Frontal</div>
+            <div><strong>Chaîne :</strong> Latérale</div>
+            <div><strong>Résistance :</strong> Charge externe</div>
+            <div><strong>Travail :</strong> Unilatéral</div>
+            <div><strong>Stabilité :</strong> Moyenne</div>
+            <div><strong>Mobilité :</strong> Faible</div>
+            <div><strong>Amplitude :</strong> Moyenne</div>
+            <div><strong>Progression :</strong> Bonne</div>
+        </div>
+    </div>
+
+    <!-- 15. COMPATIBILITÉ -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">15. Compatibilité</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+            ✅ <strong>Compatible :</strong> Échauffement, Circuit, Superset, Bi-set, Tri-set, Giant set, Rest-pause, Pyramide, Pyramide inversée, Finisher, Pré-fatigue, Post-fatigue.<br>
+            ⚠️ <strong>À adapter / Précaution :</strong> EMOM, AMRAP, Tabata.
+        </p>
+    </div>
+
+    <!-- 16 & 17 PROGRESSION & RÉGRESSION -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; font-size: 0.85rem;">
+        <div>
+            <h4 style="color: var(--accent);">📈 16. Progression</h4>
+            <p style="color: var(--text-muted);">Augmenter progressivement la charge / répétitions / séries • Ralentir la descente • Ajouter une pause en position haute • Passer à une version sans appui.</p>
+        </div>
+        <div>
+            <h4 style="color: var(--accent-purple);">📉 17. Régression</h4>
+            <p style="color: var(--text-muted);">Réduire la charge ou l'amplitude • Effectuer l'exercice assis • Augmenter le temps de repos.</p>
+        </div>
+    </div>
+
+    <!-- 18. PERFORMANCES DE RÉFÉRENCE -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">18. Performances de référence (Exécution stricte, sans élan)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-size: 0.85rem; text-align: center;">
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌱 <strong>Débutant</strong><br>12 à 20 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌿 <strong>Intermédiaire</strong><br>10 à 15 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌳 <strong>Avancé</strong><br>8 à 12 reps lourdes</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">👑 <strong>Expert</strong><br>Maîtrise parfaite + charge élevée</div>
+        </div>
+    </div>
+
+    <!-- 19. INFORMATIONS POUR L'APPLICATION & COMMENTAIRES (ADMIN UNIQUEMENT) -->
+    <div class="admin-only" style="background: rgba(59, 130, 246, 0.08); border: 1px dashed var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem;">
+        <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 8px;">⚙️ 19. Données internes & Commentaires (Admin)</h3>
+        <ul style="list-style: none; line-height: 1.6; color: var(--text-muted); margin-bottom: 12px;">
+            <li>🧠 <strong>Fatigue nerveuse :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</li>
+            <li>💥 <strong>Fatigue musculaire :</strong> ⭐⭐⭐⭐⭐⭐☆☆☆☆ (6/10)</li>
+            <li>🛡️ <strong>Risque de blessure :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</li>
+            <li>⏱️ <strong>Récupération conseillée :</strong> 24 à 48 heures</li>
+            <li>🎯 <strong>Moment idéal :</strong> Début (activation) | Milieu (hypertrophie) | Fin (séries longues / finisher)</li>
+            <li>🔥 <strong>Muscles fortement sollicités après :</strong> Deltoïde moyen, Supra-épineux, Coiffe des rotateurs</li>
+            <li>⚠️ <strong>À éviter juste après :</strong> Développé militaire très lourd si les épaules sont fatiguées, Autres exercices d'isolation du deltoïde moyen à forte intensité</li>
+            <li>⭐ <strong>Scores globaux :</strong> Polyvalence (8/10) | Accessibilité (9/10) | Construction musculaire (9/10) | Développement du deltoïde moyen (10/10) | Apprentissage technique (9/10)</li>
+        </ul>
+        <div style="border-top: 1px solid var(--border); padding-top: 10px; font-style: italic; color: var(--text-muted);">
+            <p>💬 <strong>Commentaires :</strong> L'élévation latérale unilatérale est l'un des exercices les plus efficaces pour élargir visuellement les épaules grâce au développement du deltoïde moyen. Le travail avec un seul haltère permet une excellente concentration sur le muscle et facilite la correction des déséquilibres entre les deux côtés. Une charge modérée, une montée contrôlée et une descente lente sont généralement plus efficaces qu'une charge lourde réalisée avec de l'élan.</p>
+        </div>
+    </div>
+
+</div>
+  <!-- FICHE : OISEAU UNILATÉRAL BUSTE PENCHÉ -->
+<div id="sheet-oiseau-unilateral-buste-penche">
+    <div style="border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: 20px;">
+        <h2 style="color: var(--accent); font-size: 1.4rem; margin-bottom: 5px;">🦅 Oiseau unilatéral buste penché — 1 haltère</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Abduction horizontale de l'épaule (Isolation) • Matériel : 1 haltère</p>
+    </div>
+
+    <!-- 1. MATÉRIEL & VARIANTES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">1. Matériel & Variantes</h3>
+        <p style="margin-bottom: 8px;"><strong>Matériel :</strong> 1 haltère.</p>
+        <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem; color: var(--text-muted);">
+            <li><strong style="color: var(--text-main);">Debout buste penché (recommandé) :</strong> Version la plus polyvalente. Sollicite fortement le deltoïde postérieur et demande un bon gainage.</li>
+            <li><strong style="color: var(--text-main);">Avec appui :</strong> Une main prend appui sur un banc, une chaise ou la cuisse. Offre une meilleure stabilité et réduit les compensations.</li>
+            <li><strong style="color: var(--text-main);">Assis buste penché :</strong> Réduit l'utilisation de l'élan et favorise une meilleure isolation du deltoïde postérieur.</li>
+        </ul>
+    </div>
+
+    <!-- 2. OBJECTIF PRINCIPAL -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">2. Objectif principal</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 0.85rem;">
+            <div>💪 <strong>Force :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</div>
+            <div>⚡ <strong>Puissance / Explosivité :</strong> ⭐☆☆☆☆☆☆☆☆☆ (1/10)</div>
+            <div>📈 <strong>Volume musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>🧱 <strong>Densité musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>🔋 <strong>Endurance musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>🎯 <strong>Contrôle musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>⏱️ <strong>Réactivité :</strong> ⭐☆☆☆☆☆☆☆☆☆ (1/10)</div>
+        </div>
+    </div>
+
+    <!-- 3. DESCRIPTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">3. Description de l'exercice</h3>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 10px;">
+            L'oiseau unilatéral buste penché est un exercice d'isolation destiné au développement du deltoïde postérieur.<br>
+            Le mouvement consiste à lever un haltère sur le côté en gardant le buste penché vers l'avant, puis à redescendre lentement jusqu'à la position de départ. Le travail unilatéral permet d'améliorer la connexion muscle-esprit et de corriger les déséquilibres entre les deux épaules.
+        </p>
+        <p style="font-size: 0.9rem; color: var(--text-muted);"><strong>Sollicitation principale :</strong> Deltoïde postérieur.<br>
+        <strong>Stabilisateurs / Assistances :</strong> Trapèzes moyens, rhomboïdes et muscles de la coiffe des rotateurs.</p>
+    </div>
+
+    <!-- 4. POSITION DE DÉPART -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">4. Position de départ</h3>
+        <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.5; color: var(--text-muted);">
+            <li><strong>Placement des pieds :</strong> Pieds largeur des hanches, genoux légèrement fléchis, appui stable.</li>
+            <li><strong>Placement du buste :</strong> Pencher le buste entre 45° et presque parallèle au sol, dos droit, abdominaux contractés, nuque dans l'alignement de la colonne.</li>
+            <li><strong>Placement du bras :</strong> Le bras tenant l'haltère est presque tendu, coude légèrement fléchi, paume orientée vers l'intérieur. L'autre bras peut prendre appui sur un support.</li>
+        </ul>
+    </div>
+
+    <!-- 5. EXÉCUTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">5. Exécution</h3>
+        <ol style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">
+            <li><strong>Phase de montée :</strong> Expire. Lève le bras sur le côté en guidant le mouvement par le coude (cherche à l'éloigner du corps). Monte jusqu'à ce que le bras soit proche de l'horizontale.</li>
+            <li><strong>Position haute :</strong> Contracte fortement le deltoïde postérieur. Les omoplates se rapprochent légèrement. Évite de hausser l'épaule.</li>
+            <li><strong>Phase descendante :</strong> Inspire. Redescends lentement, contrôle totalement la charge et conserve une légère tension musculaire.</li>
+        </ol>
+    </div>
+
+    <!-- 6. RESPIRATION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">6. Respiration</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;"><strong>Technique classique :</strong> Montée ➔ Expiration | Descente ➔ Inspiration.</p>
+        <p style="font-size: 0.9rem; color: #ef4444;">❌ <strong>À éviter :</strong> Bloquer la respiration | Relâcher le gainage.</p>
+    </div>
+
+    <!-- 7. TEMPO -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">7. Tempo (Descente - Pause basse - Montée - Pause haute)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div>• <strong>Classique (2-0-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>• <strong>Hypertrophie (3-1-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>• <strong>Force (2-1-X-1) :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</div>
+            <div>• <strong>Explosif (1-0-X-0) :</strong> ⭐☆☆☆☆☆☆☆☆☆ (1/10)</div>
+            <div>• <strong>Endurance (1-0-1-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>• <strong>Contrôle (5-2-3-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>• <strong>Excentrique (6-0-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+        </div>
+    </div>
+
+    <!-- 8. CONSEILS & 9. ERREURS -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <div style="background: rgba(16, 185, 129, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <h4 style="color: var(--accent-green); font-size: 0.95rem; margin-bottom: 6px;">💡 8. Conseils techniques</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Garde le dos parfaitement droit.</li>
+                <li>Le mouvement part du coude, évite de tendre complètement le bras.</li>
+                <li>Contrôle la descente et garde les épaules basses.</li>
+                <li>Utilise une charge légère à modérée pour isoler le muscle.</li>
+                <li>Recherche une forte contraction en haut.</li>
+            </ul>
+        </div>
+        <div style="background: rgba(239, 68, 68, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+            <h4 style="color: #ef4444; font-size: 0.95rem; margin-bottom: 6px;">❌ 9. Erreurs fréquentes</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Arrondir le dos ou tourner le buste.</li>
+                <li>Utiliser l'élan ou une charge excessive.</li>
+                <li>Hausser les épaules.</li>
+                <li>Monter trop haut ou descendre trop vite.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 10. MUSCLES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">10. Muscles sollicités</h3>
+        <div style="font-size: 0.85rem; line-height: 1.6;">
+            <p><strong style="color: var(--accent);">Principal :</strong> Deltoïde postérieur ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</p>
+            <p><strong style="color: var(--accent-purple);">Secondaires :</strong> Trapèze moyen (7/10) | Rhomboïdes (7/10) | Infra-épineux (6/10) | Petit rond (5/10)</p>
+            <p><strong style="color: var(--text-muted);">Stabilisateurs :</strong> Coiffe des rotateurs (7/10) | Trapèze inférieur (5/10) | Érecteurs du rachis (5/10) | Transverse (4/10)</p>
+        </div>
+    </div>
+
+    <!-- 11, 12, 13 MATÉRIEL & RÉGLAGES -->
+    <div style="margin-bottom: 20px; font-size: 0.88rem; color: var(--text-muted);">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">11, 12 & 13. Matériel & Réglages</h3>
+        <p><strong>Matériel requis :</strong> 1 haltère.</p>
+        <p><strong>Matériel alternatif :</strong> Poulie basse, Élastique, Kettlebell légère, Bouteille d'eau lestée.</p>
+        <p><strong>Position du buste :</strong> 45° (plus confortable) | Presque parallèle au sol (isolation optimale).</p>
+        <p><strong>Option d'appui :</strong> Avec appui (stabilité, zéro compensation) | Sans appui (plus de gainage).</p>
+        <p><strong>Amplitude :</strong> Jusqu'à l'horizontale (optimale) | Au-dessus (inutile).</p>
+    </div>
+
+    <!-- 14. CARACTÉRISTIQUES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">14. Caractéristiques</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div><strong>Type :</strong> Isolation</div>
+            <div><strong>Mouvement :</strong> Abduction horizontale</div>
+            <div><strong>Plan :</strong> Horizontal</div>
+            <div><strong>Chaîne :</strong> Postérieure</div>
+            <div><strong>Résistance :</strong> Charge externe</div>
+            <div><strong>Travail :</strong> Unilatéral</div>
+            <div><strong>Stabilité :</strong> Moyenne</div>
+            <div><strong>Mobilité :</strong> Faible</div>
+            <div><strong>Amplitude :</strong> Moyenne</div>
+            <div><strong>Progression :</strong> Bonne</div>
+        </div>
+    </div>
+
+    <!-- 15. COMPATIBILITÉ -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">15. Compatibilité</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+            ✅ <strong>Compatible :</strong> Échauffement, Circuit, Superset, Bi-set, Tri-set, Giant set, Rest-pause, Pyramide, Pyramide inversée, Finisher, Pré-fatigue, Post-fatigue.<br>
+            ⚠️ <strong>À adapter / Précaution :</strong> EMOM, AMRAP, Tabata.
+        </p>
+    </div>
+
+    <!-- 16 & 17 PROGRESSION & RÉGRESSION -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; font-size: 0.85rem;">
+        <div>
+            <h4 style="color: var(--accent);">📈 16. Progression</h4>
+            <p style="color: var(--text-muted);">Augmenter progressivement la charge / répétitions / séries • Ralentir la descente • Ajouter une pause en contraction • Réduire les points d'appui.</p>
+        </div>
+        <div>
+            <h4 style="color: var(--accent-purple);">📉 17. Régression</h4>
+            <p style="color: var(--text-muted);">Réduire la charge ou l'amplitude • Utiliser un appui • Redresser légèrement le buste • Augmenter le temps de repos.</p>
+        </div>
+    </div>
+
+    <!-- 18. PERFORMANCES DE RÉFÉRENCE -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">18. Performances de référence (Exécution stricte, sans élan)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-size: 0.85rem; text-align: center;">
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌱 <strong>Débutant</strong><br>12 à 20 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌿 <strong>Intermédiaire</strong><br>10 à 15 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌳 <strong>Avancé</strong><br>8 à 12 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">👑 <strong>Expert</strong><br>Contrôle parfait + charge importante</div>
+        </div>
+    </div>
+
+    <!-- 19. INFORMATIONS POUR L'APPLICATION & COMMENTAIRES (ADMIN UNIQUEMENT) -->
+    <div class="admin-only" style="background: rgba(59, 130, 246, 0.08); border: 1px dashed var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem;">
+        <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 8px;">⚙️ 19. Données internes & Commentaires (Admin)</h3>
+        <ul style="list-style: none; line-height: 1.6; color: var(--text-muted); margin-bottom: 12px;">
+            <li>🧠 <strong>Fatigue nerveuse :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</li>
+            <li>💥 <strong>Fatigue musculaire :</strong> ⭐⭐⭐⭐⭐⭐☆☆☆☆ (6/10)</li>
+            <li>🛡️ <strong>Risque de blessure :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</li>
+            <li>⏱️ <strong>Récupération conseillée :</strong> 24 à 48 heures</li>
+            <li>🎯 <strong>Moment idéal :</strong> Début (activation arrière d'épaules) | Milieu (hypertrophie) | Fin (finisher / correctif)</li>
+            <li>🔥 <strong>Muscles fortement sollicités après :</strong> Deltoïde postérieur, Trapèzes moyens, Rhomboïdes, Coiffe des rotateurs</li>
+            <li>⚠️ <strong>À éviter juste après :</strong> Rowing lourd, Face pull lourd, Autres exercices ciblant intensément l'arrière des épaules</li>
+            <li>⭐ <strong>Scores globaux :</strong> Polyvalence (8/10) | Accessibilité (9/10) | Construction musculaire (8/10) | Développement du deltoïde postérieur (10/10) | Apprentissage technique (9/10)</li>
+        </ul>
+        <div style="border-top: 1px solid var(--border); padding-top: 10px; font-style: italic; color: var(--text-muted);">
+            <p>💬 <strong>Commentaires :</strong> L'oiseau unilatéral est l'un des meilleurs exercices pour développer le deltoïde postérieur, souvent négligé dans les programmes de musculation. Une charge légère à modérée permet généralement une meilleure activation qu'une charge lourde accompagnée de mouvements d'élan. La version avec appui est idéale pour limiter les compensations et maximiser le travail du deltoïde postérieur.</p>
+        </div>
+    </div>
+
+</div>
+  <!-- FICHE : HOLLOW BODY HOLD / HOLLOW ROCK -->
+<div id="sheet-hollow-body-hold-rock">
+    <div style="border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: 20px;">
+        <h2 style="color: var(--accent); font-size: 1.4rem; margin-bottom: 5px;">🧱 Hollow Body Hold / Hollow Rock — Poids du corps</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Gainage isométrique / dynamique • Matériel : Aucun (Poids du corps)</p>
+    </div>
+
+    <!-- 1. MATÉRIEL & VARIANTES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">1. Matériel & Variantes</h3>
+        <p style="margin-bottom: 8px;"><strong>Matériel :</strong> Aucun matériel (Tapis de sol / serviette conseillés).</p>
+        <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem; color: var(--text-muted);">
+            <li><strong style="color: var(--text-main);">Hollow Body Hold (version recommandée) :</strong> Position statique. Développe le gainage profond et constitue une excellente base pour la gymnastique et le calisthenics.</li>
+            <li><strong style="color: var(--text-main);">Hollow Rock :</strong> Même position, mais avec un léger balancement d'avant en arrière. Demande davantage de contrôle et augmente le travail abdominal et la coordination.</li>
+        </ul>
+    </div>
+
+    <!-- 2. OBJECTIF PRINCIPAL -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">2. Objectif principal</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 0.85rem;">
+            <div>💪 <strong>Force :</strong> ⭐⭐⭐⭐⭐⭐☆☆☆☆ (6/10)</div>
+            <div>⚡ <strong>Puissance / Explosivité :</strong> ⭐☆☆☆☆☆☆☆☆☆ (1/10)</div>
+            <div>📈 <strong>Volume musculaire :</strong> ⭐⭐⭐⭐⭐⭐☆☆☆☆ (6/10)</div>
+            <div>🧱 <strong>Densité musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</div>
+            <div>🔋 <strong>Endurance musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>🎯 <strong>Contrôle musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>⏱️ <strong>Réactivité :</strong> ⭐☆☆☆☆☆☆☆☆☆ (1/10)</div>
+        </div>
+    </div>
+
+    <!-- 3. DESCRIPTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">3. Description de l'exercice</h3>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 10px;">
+            Le Hollow Body Hold est un exercice de gainage isométrique consistant à maintenir une position creuse ("hollow") où seuls les lombaires restent plaquées au sol. Le Hollow Rock reprend exactement cette position mais y ajoute un léger balancement du corps.
+        </p>
+        <p style="font-size: 0.9rem; color: var(--text-muted);"><strong>Bénéfices principaux :</strong> Développe le gainage global, le contrôle du bassin, la stabilité du tronc et la coordination. Très utilisé en gymnastique, calisthenics et préparation physique.</p>
+    </div>
+
+    <!-- 4. POSITION DE DÉPART -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">4. Position de départ</h3>
+        <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.5; color: var(--text-muted);">
+            <li><strong>Placement du corps :</strong> Allongé sur le dos, lombaires plaquées contre le sol, bassin en légère rétroversion, abdominaux fortement contractés.</li>
+            <li><strong>Placement des jambes :</strong> Jambes tendues, pieds serrés, légèrement décollés du sol (plus elles sont basses, plus c'est difficile).</li>
+            <li><strong>Placement des bras :</strong> Bras tendus derrière la tête, biceps proches des oreilles (peuvent être ramenés vers les cuisses pour faciliter).</li>
+        </ul>
+    </div>
+
+    <!-- 5. EXÉCUTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">5. Exécution</h3>
+        <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">
+            <li><strong style="color: var(--text-main);">Hollow Body Hold :</strong> Expire, décolle simultanément les jambes, les épaules et les bras. Maintiens la position sans perdre le contact des lombaires avec le sol. Respire normalement et conserve la position.</li>
+            <li><strong style="color: var(--text-main);">Hollow Rock :</strong> Depuis le Hollow Hold, effectue un léger balancement initié par le gainage. Le corps reste parfaitement rigide, sans jamais plier les hanches ou les genoux.</li>
+        </ul>
+    </div>
+
+    <!-- 6. RESPIRATION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">6. Respiration</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;"><strong>Technique classique :</strong> Respiration lente et régulière tout au long du maintien. Ne jamais bloquer sa respiration.</p>
+        <p style="font-size: 0.9rem; color: #ef4444;">❌ <strong>À éviter :</strong> Apnée prolongée | Respirer de manière désordonnée.</p>
+    </div>
+
+    <!-- 7. TEMPO -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">7. Tempo (Format Maintien / Balancement)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div>• <strong>Hollow Hold (Maintien continu) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>• <strong>Hollow Rock lent (2-0-2-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>• <strong>Hollow Rock rapide (1-0-1-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</div>
+        </div>
+    </div>
+
+    <!-- 8. CONSEILS & 9. ERREURS -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <div style="background: rgba(16, 185, 129, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <h4 style="color: var(--accent-green); font-size: 0.95rem; margin-bottom: 6px;">💡 8. Conseils techniques</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Garde impérativement les lombaires collées au sol.</li>
+                <li>Contracte fortement les abdominaux et allonge le corps au maximum.</li>
+                <li>Garde les jambes tendues sans les monter trop haut.</li>
+                <li>Respire normalement et privilégie la qualité du maintien.</li>
+            </ul>
+        </div>
+        <div style="background: rgba(239, 68, 68, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+            <h4 style="color: #ef4444; font-size: 0.95rem; margin-bottom: 6px;">❌ 9. Erreurs fréquentes</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Lombaires qui se décollent du sol.</li>
+                <li>Genoux fléchis ou bras trop bas.</li>
+                <li>Balancement avec les jambes uniquement (en Rock).</li>
+                <li>Perte du gainage / Blocage de la respiration.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 10. MUSCLES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">10. Muscles sollicités</h3>
+        <div style="font-size: 0.85rem; line-height: 1.6;">
+            <p><strong style="color: var(--accent);">Principaux :</strong> Grand droit de l'abdomen (Haut 8/10 | Bas 10/10) | Transverse ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</p>
+            <p><strong style="color: var(--accent-purple);">Secondaires :</strong> Obliques (8/10) | Fléchisseurs de hanche (7/10)</p>
+            <p><strong style="color: var(--text-muted);">Stabilisateurs :</strong> Érecteurs du rachis (4/10) | Dentelé antérieur (4/10) | Deltoïde antérieur (3/10)</p>
+        </div>
+    </div>
+
+    <!-- 11, 12, 13 MATÉRIEL & RÉGLAGES -->
+    <div style="margin-bottom: 20px; font-size: 0.88rem; color: var(--text-muted);">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">11, 12 & 13. Matériel & Réglages</h3>
+        <p><strong>Matériel requis :</strong> Aucun (Tapis / Serviette en option).</p>
+        <p><strong>Réglage des jambes :</strong> Plus hautes (plus facile) | Plus basses (plus difficile).</p>
+        <p><strong>Réglage des bras :</strong> Devant le corps (plus facile) | Derrière la tête (plus difficile).</p>
+        <p><strong>Variantes :</strong> Hollow Hold (accent maintien statique) | Hollow Rock (coordination et dynamique).</p>
+    </div>
+
+    <!-- 14. CARACTÉRISTIQUES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">14. Caractéristiques</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div><strong>Type :</strong> Gainage isométrique / dynamique</div>
+            <div><strong>Plan :</strong> Sagittal</div>
+            <div><strong>Chaîne :</strong> Antérieure</div>
+            <div><strong>Résistance :</strong> Poids du corps</div>
+            <div><strong>Travail :</strong> Bilatéral</div>
+            <div><strong>Unilatéral :</strong> Non</div>
+            <div><strong>Stabilité :</strong> Très faible</div>
+            <div><strong>Mobilité :</strong> Faible</div>
+            <div><strong>Amplitude :</strong> Faible (Hold) à moyenne (Rock)</div>
+            <div><strong>Progression :</strong> Moyenne</div>
+        </div>
+    </div>
+
+    <!-- 15. COMPATIBILITÉ -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">15. Compatibilité</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+            ✅ <strong>Compatible :</strong> Échauffement, Circuit, Superset, Bi-set, Tri-set, Giant set, EMOM, AMRAP, Tabata, Rest-pause, Finisher, Pré-fatigue, Post-fatigue.<br>
+            ⚠️ <strong>À adapter / Précaution :</strong> Pyramide, Pyramide inversée.
+        </p>
+    </div>
+
+    <!-- 16 & 17 PROGRESSION & RÉGRESSION -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; font-size: 0.85rem;">
+        <div>
+            <h4 style="color: var(--accent);">📈 16. Progression</h4>
+            <p style="color: var(--text-muted);">Augmenter le temps de maintien • Abaisser davantage les jambes • Tendre complètement les bras • Passer au Hollow Rock • Balancements plus longs / enchaîner les séries.</p>
+        </div>
+        <div>
+            <h4 style="color: var(--accent-purple);">📉 17. Régression</h4>
+            <p style="color: var(--text-muted);">Plier légèrement les genoux • Garder les bras le long du corps • Monter un peu les jambes • Réduire le temps de maintien (maintiens courts).</p>
+        </div>
+    </div>
+
+    <!-- 18. PERFORMANCES DE RÉFÉRENCE -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">18. Performances de référence</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-size: 0.85rem; text-align: center;">
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌱 <strong>Débutant</strong><br>10 à 20 secondes</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌿 <strong>Intermédiaire</strong><br>30 à 45 secondes</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌳 <strong>Avancé</strong><br>60 à 90 secondes</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">👑 <strong>Expert</strong><br>2 min+ Hold strict / 1 min+ Rock contrôlé</div>
+        </div>
+    </div>
+
+    <!-- 19. INFORMATIONS POUR L'APPLICATION & COMMENTAIRES (ADMIN UNIQUEMENT) -->
+    <div class="admin-only" style="background: rgba(59, 130, 246, 0.08); border: 1px dashed var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem;">
+        <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 8px;">⚙️ 19. Données internes & Commentaires (Admin)</h3>
+        <ul style="list-style: none; line-height: 1.6; color: var(--text-muted); margin-bottom: 12px;">
+            <li>🧠 <strong>Fatigue nerveuse :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</li>
+            <li>💥 <strong>Fatigue musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</li>
+            <li>🛡️ <strong>Risque de blessure :</strong> ⭐⭐☆☆☆☆☆☆☆☆ (2/10)</li>
+            <li>⏱️ <strong>Récupération conseillée :</strong> 24 heures</li>
+            <li>🎯 <strong>Moment idéal :</strong> Début (activation gainage) | Milieu (travail spécifique) | Fin (finisher)</li>
+            <li>🔥 <strong>Muscles fortement sollicités après :</strong> Grand droit, Transverse, Obliques, Fléchisseurs de hanche</li>
+            <li>⚠️ <strong>À éviter juste après :</strong> Exercices demandant un gainage maximal si une fatigue importante est présente</li>
+            <li>⭐ <strong>Scores globaux :</strong> Polyvalence (10/10) | Accessibilité (8/10) | Construction musculaire (7/10) | Développement du gainage (10/10) | Contrôle du corps (10/10)</li>
+        </ul>
+        <div style="border-top: 1px solid var(--border); padding-top: 10px; font-style: italic; color: var(--text-muted);">
+            <p>💬 <strong>Commentaires :</strong> Le Hollow Body Hold est considéré comme l'un des exercices de gainage les plus complets pour apprendre à maintenir une forte tension du tronc. Il constitue une base essentielle en gymnastique et en calisthenics. Le Hollow Rock reprend exactement la même position, mais ajoute un mouvement de balancement qui augmente les exigences en matière de coordination et de stabilité. La priorité absolue est de garder les lombaires plaquées au sol. Si elles se décollent, il est préférable de relever légèrement les jambes ou de plier un peu les genoux afin de conserver une exécution correcte.</p>
+        </div>
+    </div>
+
+</div>
+  <!-- FICHE : PLANK-TO-PUSH-UP -->
+<div id="sheet-plank-to-push-up">
+    <div style="border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: 20px;">
+        <h2 style="color: var(--accent); font-size: 1.4rem; margin-bottom: 5px;">🔄 Plank-to-Push-up — Poids du corps</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Gainage dynamique + Poussée (Polyarticulaire) • Matériel : Aucun (Poids du corps)</p>
+    </div>
+
+    <!-- 1. MATÉRIEL & VARIANTES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">1. Matériel & Variantes</h3>
+        <p style="margin-bottom: 8px;"><strong>Matériel :</strong> Aucun matériel (Tapis / Serviette en option).</p>
+        <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem; color: var(--text-muted);">
+            <li><strong style="color: var(--text-main);">Version classique (recommandée) :</strong> Départ en planche sur les avant-bras, monter en position de pompe puis redescendre en alternant le bras qui initie le mouvement.</li>
+            <li><strong style="color: var(--text-main);">Sur les genoux :</strong> Réduit la charge, adapté aux débutants.</li>
+            <li><strong style="color: var(--text-main);">Pieds surélevés :</strong> Augmente la difficulté, accentue le travail des épaules et du gainage.</li>
+        </ul>
+    </div>
+
+    <!-- 2. OBJECTIF PRINCIPAL -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">2. Objectif principal</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 0.85rem;">
+            <div>💪 <strong>Force :</strong> ⭐⭐⭐⭐⭐⭐☆☆☆☆ (6/10)</div>
+            <div>⚡ <strong>Puissance / Explosivité :</strong> ⭐⭐☆☆☆☆☆☆☆☆ (2/10)</div>
+            <div>📈 <strong>Volume musculaire :</strong> ⭐⭐⭐⭐⭐⭐☆☆☆☆ (6/10)</div>
+            <div>🧱 <strong>Densité musculaire :</strong> ⭐⭐⭐⭐⭐⭐☆☆☆☆ (6/10)</div>
+            <div>🔋 <strong>Endurance musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>🎯 <strong>Contrôle musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>⏱️ <strong>Réactivité :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</div>
+        </div>
+    </div>
+
+    <!-- 3. DESCRIPTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">3. Description de l'exercice</h3>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 10px;">
+            Le Plank-to-Push-up est un exercice de gainage dynamique combinant une planche sur les avant-bras et une position de pompe.<br>
+            Le mouvement consiste à passer d'une planche basse à une planche haute en poussant avec les bras, puis à revenir lentement sur les avant-bras.
+        </p>
+        <p style="font-size: 0.9rem; color: var(--text-muted);"><strong>Bénéfices principaux :</strong> Développe le gainage dynamique, la stabilité des épaules, la coordination et l'endurance musculaire.<br>
+        <strong>Muscles clés :</strong> Épaules, triceps, pectoraux et sangle abdominale.</p>
+    </div>
+
+    <!-- 4. POSITION DE DÉPART -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">4. Position de départ</h3>
+        <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.5; color: var(--text-muted);">
+            <li><strong>Placement des pieds :</strong> Pieds largeur des hanches, pointes de pieds au sol, jambes tendues.</li>
+            <li><strong>Placement du tronc :</strong> Corps parfaitement aligné, abdominaux contractés, fessiers serrés, dos neutre.</li>
+            <li><strong>Placement des bras :</strong> Avant-bras au sol, coudes sous les épaules, avant-bras parallèles.</li>
+        </ul>
+    </div>
+
+    <!-- 5. EXÉCUTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">5. Exécution</h3>
+        <ol style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">
+            <li><strong>Phase montante :</strong> Expire. Pose une main au sol, tends ce bras, puis pose l'autre main pour arriver en position de pompe tout en maintenant le bassin immobile.</li>
+            <li><strong>Phase descendante :</strong> Inspire. Redescends un avant-bras puis l'autre pour revenir en planche basse.</li>
+            <li><strong>Alternance :</strong> Pense à alterner le bras qui initie le mouvement à chaque répétition.</li>
+        </ol>
+    </div>
+
+    <!-- 6. RESPIRATION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">6. Respiration</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;"><strong>Technique classique :</strong> Montée ➔ Expiration | Descente ➔ Inspiration.</p>
+        <p style="font-size: 0.9rem; color: #ef4444;">❌ <strong>À éviter :</strong> Bloquer sa respiration | Respirer de manière irrégulière.</p>
+    </div>
+
+    <!-- 7. TEMPO -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">7. Tempo (Montée - Pause haute - Descente - Pause basse)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div>• <strong>Classique (2-0-2-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>• <strong>Hypertrophie (3-1-3-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>• <strong>Force (2-1-X-1) :</strong> ⭐⭐⭐⭐⭐⭐☆☆☆☆ (6/10)</div>
+            <div>• <strong>Explosif (1-0-X-0) :</strong> ⭐⭐⭐⭐☆☆☆☆☆☆ (4/10)</div>
+            <div>• <strong>Endurance (1-0-1-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>• <strong>Contrôle (5-2-5-2) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>• <strong>Excentrique (5-0-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</div>
+        </div>
+    </div>
+
+    <!-- 8. CONSEILS & 9. ERREURS -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <div style="background: rgba(16, 185, 129, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <h4 style="color: var(--accent-green); font-size: 0.95rem; margin-bottom: 6px;">💡 8. Conseils techniques</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Garde le bassin le plus immobile possible.</li>
+                <li>Alterne le bras moteur à chaque répétition.</li>
+                <li>Contracte fortement les abdominaux et garde les épaules basses.</li>
+                <li>Contrôle la descente et recherche un mouvement fluide.</li>
+            </ul>
+        </div>
+        <div style="background: rgba(239, 68, 68, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+            <h4 style="color: #ef4444; font-size: 0.95rem; margin-bottom: 6px;">❌ 9. Erreurs fréquentes</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Rotation ou balancement du bassin.</li>
+                <li>Fesses trop hautes ou bassin qui s'affaisse.</li>
+                <li>Monter trop vite sans contrôle.</li>
+                <li>Épaules qui montent vers les oreilles.</li>
+                <li>Toujours commencer avec le même bras.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 10. MUSCLES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">10. Muscles sollicités</h3>
+        <div style="font-size: 0.85rem; line-height: 1.6;">
+            <p><strong style="color: var(--accent);">Principaux :</strong> Transverse (10/10) | Grand droit (Haut 8/10, Bas 8/10) | Deltoïde antérieur (8/10) | Triceps (Long, Latéral, Médial 7/10)</p>
+            <p><strong style="color: var(--accent-purple);">Secondaires :</strong> Grand pectoral (6/10) | Obliques (7/10)</p>
+            <p><strong style="color: var(--text-muted);">Stabilisateurs :</strong> Dentelé antérieur (8/10) | Coiffe des rotateurs (7/10) | Érecteurs du rachis (6/10) | Fessiers (5/10)</p>
+        </div>
+    </div>
+
+    <!-- 11, 12, 13 MATÉRIEL & RÉGLAGES -->
+    <div style="margin-bottom: 20px; font-size: 0.88rem; color: var(--text-muted);">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">11, 12 & 13. Matériel & Réglages</h3>
+        <p><strong>Matériel requis :</strong> Aucun (Tapis / Serviette en option).</p>
+        <p><strong>Écartement des pieds :</strong> Rapprochés (plus difficile / plus de gainage) | Écartés (plus stable / plus facile).</p>
+        <p><strong>Variantes :</strong> Sur les genoux (plus accessible) | Pieds surélevés (plus difficile).</p>
+        <p><strong>Vitesse :</strong> Lente (contrôle) | Rapide (endurance).</p>
+    </div>
+
+    <!-- 14. CARACTÉRISTIQUES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">14. Caractéristiques</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div><strong>Type :</strong> Polyarticulaire</div>
+            <div><strong>Mouvement :</strong> Gainage dynamique + poussée</div>
+            <div><strong>Plan :</strong> Horizontal</div>
+            <div><strong>Chaîne :</strong> Antérieure</div>
+            <div><strong>Résistance :</strong> Poids du corps</div>
+            <div><strong>Travail :</strong> Alterné</div>
+            <div><strong>Stabilité :</strong> Faible</div>
+            <div><strong>Mobilité :</strong> Faible</div>
+            <div><strong>Amplitude :</strong> Moyenne</div>
+            <div><strong>Progression :</strong> Moyenne</div>
+        </div>
+    </div>
+
+    <!-- 15. COMPATIBILITÉ -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">15. Compatibilité</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+            ✅ <strong>Compatible :</strong> Échauffement, Circuit, Superset, Bi-set, Tri-set, Giant set, EMOM, AMRAP, Tabata, Finisher, Pré-fatigue, Post-fatigue.<br>
+            ⚠️ <strong>À adapter / Précaution :</strong> Rest-pause, Pyramide, Pyramide inversée.
+        </p>
+    </div>
+
+    <!-- 16 & 17 PROGRESSION & RÉGRESSION -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; font-size: 0.85rem;">
+        <div>
+            <h4 style="color: var(--accent);">📈 16. Progression</h4>
+            <p style="color: var(--text-muted);">Augmenter les répétitions / la durée • Rapprocher ou surélever les pieds • Ralentir le tempo • Ajouter une pause en position haute.</p>
+        </div>
+        <div>
+            <h4 style="color: var(--accent-purple);">📉 17. Régression</h4>
+            <p style="color: var(--text-muted);">Réaliser sur les genoux • Écarter davantage les pieds • Réduire le volume • Augmenter le repos.</p>
+        </div>
+    </div>
+
+    <!-- 18. PERFORMANCES DE RÉFÉRENCE -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">18. Performances de référence (1 rep = 1 montée + 1 descente)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-size: 0.85rem; text-align: center;">
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌱 <strong>Débutant</strong><br>5 à 10 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌿 <strong>Intermédiaire</strong><br>10 à 20 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌳 <strong>Avancé</strong><br>20 à 35 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">👑 <strong>Expert</strong><br>40+ reps strictes</div>
+        </div>
+    </div>
+
+    <!-- 19. INFORMATIONS POUR L'APPLICATION & COMMENTAIRES (ADMIN UNIQUEMENT) -->
+    <div class="admin-only" style="background: rgba(59, 130, 246, 0.08); border: 1px dashed var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem;">
+        <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 8px;">⚙️ 19. Données internes & Commentaires (Admin)</h3>
+        <ul style="list-style: none; line-height: 1.6; color: var(--text-muted); margin-bottom: 12px;">
+            <li>🧠 <strong>Fatigue nerveuse :</strong> ⭐⭐⭐⭐☆☆☆☆☆☆ (4/10)</li>
+            <li>💥 <strong>Fatigue musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</li>
+            <li>🛡️ <strong>Risque de blessure :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</li>
+            <li>⏱️ <strong>Récupération conseillée :</strong> 24 à 48 heures</li>
+            <li>🎯 <strong>Moment idéal :</strong> Début (activation tronc/épaules) | Milieu (gainage dynamique) | Fin (finisher)</li>
+            <li>🔥 <strong>Muscles fortement sollicités après :</strong> Transverse, Grand droit, Deltoïdes antérieurs, Triceps, Dentelé antérieur</li>
+            <li>⚠️ <strong>À éviter juste après :</strong> Longues séries de pompes ou développé militaire lourd si les épaules/triceps sont très fatigués</li>
+            <li>⭐ <strong>Scores globaux :</strong> Polyvalence (10/10) | Accessibilité (8/10) | Construction musculaire (7/10) | Développement du gainage (10/10) | Coordination (10/10)</li>
+        </ul>
+        <div style="border-top: 1px solid var(--border); padding-top: 10px; font-style: italic; color: var(--text-muted);">
+            <p>💬 <strong>Commentaires :</strong> Le Plank-to-Push-up est un excellent exercice de gainage dynamique qui renforce simultanément les abdominaux, les épaules et les triceps. Pour éviter les déséquilibres musculaires, il est important d'alterner le bras qui initie la montée à chaque répétition ou à chaque série. La priorité est de maintenir un bassin parfaitement stable : si les hanches pivotent, réduis la vitesse d'exécution ou adopte une version plus facile.</p>
+        </div>
+    </div>
+
+</div>
+      <!-- FICHE : EXTENSIONS DES MOLLETS DEBOUT UNILATÉRALES -->
+<div id="sheet-calf-raise-unilateral">
+    <div style="border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: 20px;">
+        <h2 style="color: var(--accent); font-size: 1.4rem; margin-bottom: 5px;">🦵 Extensions des mollets debout unilatérales — 1 ou 2 haltères</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Isolation • Flexion plantaire • Unilatéral • Matériel : 1 ou 2 haltères + Marche</p>
+    </div>
+
+    <!-- 1. MATÉRIEL & VARIANTES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">1. Matériel & Variantes</h3>
+        <p style="margin-bottom: 8px;"><strong>Matériel :</strong> 1 ou 2 haltères, une marche ou un support stable.</p>
+        <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem; color: var(--text-muted);">
+            <li><strong style="color: var(--text-main);">1 haltère (version recommandée) :</strong> Haltère tenu dans la main opposée à la jambe travaillée. Une main libre prend appui sur un support pour améliorer l'équilibre. Version la plus simple à maîtriser.</li>
+            <li><strong style="color: var(--text-main);">2 haltères :</strong> Un haltère dans chaque main. Permet d'augmenter la charge, mais demande davantage de force de préhension et de stabilité.</li>
+        </ul>
+    </div>
+
+    <!-- 2. OBJECTIF PRINCIPAL -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">2. Objectif principal</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 0.85rem;">
+            <div>💪 <strong>Force :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>⚡ <strong>Puissance / Explosivité :</strong> ⭐⭐⭐⭐☆☆☆☆☆☆ (4/10)</div>
+            <div>📈 <strong>Volume musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>🧱 <strong>Densité musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>🔋 <strong>Endurance musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>🎯 <strong>Contrôle musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>⏱️ <strong>Réactivité :</strong> ⭐⭐☆☆☆☆☆☆☆☆ (2/10)</div>
+        </div>
+    </div>
+
+    <!-- 3. DESCRIPTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">3. Description de l'exercice</h3>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 10px;">
+            Les extensions des mollets debout unilatérales sont un exercice d'isolation visant à développer la force, le volume et la définition des mollets.<br>
+            Le mouvement consiste à pousser sur l'avant du pied afin d'élever le talon le plus haut possible, puis à redescendre lentement jusqu'à obtenir un étirement complet.
+        </p>
+        <p style="font-size: 0.9rem; color: var(--text-muted);"><strong>Bénéfices principaux :</strong> Le travail sur une seule jambe augmente fortement l'amplitude, corrige les déséquilibres entre les deux côtés et améliore l'équilibre.</p>
+    </div>
+
+    <!-- 4. POSITION DE DÉPART -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">4. Position de départ</h3>
+        <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.5; color: var(--text-muted);">
+            <li><strong>Placement du pied :</strong> L'avant du pied repose sur une marche, le talon est libre de descendre sous le niveau du support. Pied orienté vers l'avant.</li>
+            <li><strong>Placement du corps :</strong> Dos droit, abdominaux contractés, bassin neutre. La jambe d'appui reste légèrement fléchie.</li>
+            <li><strong>Placement des haltères :</strong> 1 haltère dans la main opposée (l'autre main en appui) OU 2 haltères (bras relâchés le long du corps).</li>
+        </ul>
+    </div>
+
+    <!-- 5. EXÉCUTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">5. Exécution</h3>
+        <ol style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">
+            <li><strong>Phase montante :</strong> Expire. Pousse uniquement avec l'avant du pied, monte le plus haut possible sur la pointe du pied et contracte fortement le mollet.</li>
+            <li><strong>Position haute :</strong> Marque une courte pause et recherche la contraction maximale.</li>
+            <li><strong>Phase descendante :</strong> Inspire. Redescends lentement, laisse le talon descendre sous le niveau du support pour un étirement complet sans relâcher la tension.</li>
+        </ol>
+    </div>
+
+    <!-- 6. RESPIRATION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">6. Respiration</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;"><strong>Technique classique :</strong> Montée ➔ Expiration | Descente ➔ Inspiration.</p>
+        <p style="font-size: 0.9rem; color: #ef4444;">❌ <strong>À éviter :</strong> Bloquer la respiration | Respirer de façon irrégulière.</p>
+    </div>
+
+    <!-- 7. TEMPO -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">7. Tempo (Montée - Pause haute - Descente - Pause basse)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div>• <strong>Classique (2-1-2-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>• <strong>Hypertrophie (2-2-3-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>• <strong>Force (2-1-X-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>• <strong>Explosif (1-0-X-0) :</strong> ⭐⭐⭐⭐⭐☆☆☆☆☆ (5/10)</div>
+            <div>• <strong>Endurance (1-0-2-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>• <strong>Contrôle (4-2-4-2) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>• <strong>Excentrique (2-1-6-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+        </div>
+    </div>
+
+    <!-- 8. CONSEILS & 9. ERREURS -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <div style="background: rgba(16, 185, 129, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <h4 style="color: var(--accent-green); font-size: 0.95rem; margin-bottom: 6px;">💡 8. Conseils techniques</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Monte aussi haut que possible et descend jusqu'à l'étirement complet.</li>
+                <li>Contrôle toute la descente et évite tout rebond en bas.</li>
+                <li>Garde le genou presque immobile et le pied bien dans l'axe.</li>
+                <li>Contracte volontairement le mollet en position haute.</li>
+            </ul>
+        </div>
+        <div style="background: rgba(239, 68, 68, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+            <h4 style="color: #ef4444; font-size: 0.95rem; margin-bottom: 6px;">❌ 9. Erreurs fréquentes</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Rebondir en bas de l'extension.</li>
+                <li>Amplitude trop faible (ne pas étirer ou ne pas monter assez haut).</li>
+                <li>Pencher le corps ou tourner le pied vers l'intérieur/extérieur.</li>
+                <li>Aller trop vite ou utiliser une charge excessive.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 10. MUSCLES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">10. Muscles sollicités</h3>
+        <div style="font-size: 0.85rem; line-height: 1.6;">
+            <p><strong style="color: var(--accent);">Principaux :</strong> Gastrocnémien médial (10/10) | Gastrocnémien latéral (9/10)</p>
+            <p><strong style="color: var(--accent-purple);">Secondaires :</strong> Soléaire (8/10) | Plantaire (5/10)</p>
+            <p><strong style="color: var(--text-muted);">Stabilisateurs :</strong> Tibial postérieur (6/10) | Fibulaires (6/10) | Abducteurs de hanche (4/10) | Transverse (3/10)</p>
+        </div>
+    </div>
+
+    <!-- 11, 12, 13 MATÉRIEL & RÉGLAGES -->
+    <div style="margin-bottom: 20px; font-size: 0.88rem; color: var(--text-muted);">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">11, 12 & 13. Matériel & Réglages</h3>
+        <p><strong>Matériel requis :</strong> 1 ou 2 haltères + marche/support stable (Alternatives : Sac à dos lesté, Kettlebell, Barre, Machine).</p>
+        <p><strong>Option haltères :</strong> 1 haltère (recommandé, meilleur équilibre) | 2 haltères (charge plus importante, sollicite la préhension).</p>
+        <p><strong>Support :</strong> Avec marche (amplitude & étirement max) | Au sol (plus simple, amplitude réduite).</p>
+        <p><strong>Appui :</strong> Avec une main (plus stable) | Sans appui (travail d'équilibre supérieur).</p>
+    </div>
+
+    <!-- 14. CARACTÉRISTIQUES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">14. Caractéristiques</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div><strong>Type :</strong> Isolation</div>
+            <div><strong>Mouvement :</strong> Flexion plantaire</div>
+            <div><strong>Plan :</strong> Sagittal</div>
+            <div><strong>Chaîne :</strong> Postérieure</div>
+            <div><strong>Résistance :</strong> Charge externe</div>
+            <div><strong>Travail :</strong> Unilatéral</div>
+            <div><strong>Stabilité :</strong> Moyenne à élevée</div>
+            <div><strong>Mobilité :</strong> Moyenne</div>
+            <div><strong>Amplitude :</strong> Grande</div>
+            <div><strong>Progression :</strong> Excellente</div>
+        </div>
+    </div>
+
+    <!-- 15. COMPATIBILITÉ -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">15. Compatibilité</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+            ✅ <strong>Compatible :</strong> Échauffement, Circuit, Superset, Bi-set, Tri-set, Giant set, EMOM, AMRAP, Rest-pause, Pyramide, Pyramide inversée, Finisher, Pré-fatigue, Post-fatigue.<br>
+            ⚠️ <strong>À adapter / Précaution :</strong> Tabata.
+        </p>
+    </div>
+
+    <!-- 16 & 17 PROGRESSION & RÉGRESSION -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; font-size: 0.85rem;">
+        <div>
+            <h4 style="color: var(--accent);">📈 16. Progression</h4>
+            <p style="color: var(--text-muted);">Augmenter la charge / reps / séries • Utiliser une marche plus haute • Allonger la descente • Ajouter une pause en contraction haute.</p>
+        </div>
+        <div>
+            <h4 style="color: var(--accent-purple);">📉 17. Régression</h4>
+            <p style="color: var(--text-muted);">Réaliser l'exercice au sol • Utiliser uniquement le poids du corps • Prendre un appui stable • Réduire l'amplitude ou le nombre de reps.</p>
+        </div>
+    </div>
+
+    <!-- 18. PERFORMANCES DE RÉFÉRENCE -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">18. Performances de référence (par jambe, amplitude complète)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-size: 0.85rem; text-align: center;">
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌱 <strong>Débutant</strong><br>10 à 15 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌿 <strong>Intermédiaire</strong><br>15 à 25 reps</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌳 <strong>Avancé</strong><br>20 à 35 reps + charge</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">👑 <strong>Expert</strong><br>35+ reps / charges lourdes</div>
+        </div>
+    </div>
+
+    <!-- 19. INFORMATIONS POUR L'APPLICATION & COMMENTAIRES (ADMIN UNIQUEMENT) -->
+    <div class="admin-only" style="background: rgba(59, 130, 246, 0.08); border: 1px dashed var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem;">
+        <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 8px;">⚙️ 19. Données internes & Commentaires (Admin)</h3>
+        <ul style="list-style: none; line-height: 1.6; color: var(--text-muted); margin-bottom: 12px;">
+            <li>🧠 <strong>Fatigue nerveuse :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</li>
+            <li>💥 <strong>Fatigue musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</li>
+            <li>🛡️ <strong>Risque de blessure :</strong> ⭐⭐☆☆☆☆☆☆☆☆ (2/10)</li>
+            <li>⏱️ <strong>Récupération conseillée :</strong> 24 à 48 heures</li>
+            <li>🎯 <strong>Moment idéal :</strong> Début (travail de force) | Milieu (hypertrophie) | Fin (séries longues ou finisher)</li>
+            <li>🔥 <strong>Muscles fortement sollicités après :</strong> Gastrocnémiens, Soléaire, Tibial postérieur</li>
+            <li>⚠️ <strong>À éviter juste après :</strong> Sprints, sauts explosifs ou exercices exigeants pour les chevilles si les mollets sont fatigués</li>
+            <li>⭐ <strong>Scores globaux :</strong> Polyvalence (9/10) | Accessibilité (8/10) | Construction musculaire (10/10) | Développement des mollets (10/10) | Apprentissage technique (8/10)</li>
+        </ul>
+        <div style="border-top: 1px solid var(--border); padding-top: 10px; font-style: italic; color: var(--text-muted);">
+            <p>💬 <strong>Commentaires :</strong> Les extensions des mollets unilatérales offrent généralement une meilleure amplitude et une meilleure activation musculaire que la version bilatérale. La version à 1 haltère est idéale pour la majorité des pratiquants grâce à son équilibre entre stabilité et surcharge progressive. Pour maximiser le développement des mollets, privilégie une amplitude complète, une pause en position haute et une descente lente et contrôlée.</p>
+        </div>
+    </div>
+
+</div>
+      <!-- FICHE : TRACTIONS PRISE LARGE -->
+<div id="sheet-tractions-prise-large">
+    <div style="border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: 20px;">
+        <h2 style="color: var(--accent); font-size: 1.4rem; margin-bottom: 5px;">🏋️ Tractions prise large — Poids du corps / Lesté</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Tirage vertical (Polyarticulaire) • Matériel : Barre de traction (Lest / Élastique)</p>
+    </div>
+
+    <!-- 1. MATÉRIEL & VARIANTES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">1. Matériel & Variantes</h3>
+        <p style="margin-bottom: 8px;"><strong>Matériel :</strong> Barre fixe, gilet lesté ou ceinture de lest, élastique d'assistance.</p>
+        <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem; color: var(--text-muted);">
+            <li><strong style="color: var(--text-main);">Prise pronation large (Standard) :</strong> Mains écartées d'environ 1,5 fois la largeur des épaules. Maximise le travail de la largeur du dos (grand dorsal et grand rond).</li>
+            <li><strong style="color: var(--text-main);">Tractions lestées :</strong> Ajout de poids (ceinture ou gilet) pour le développement de la force maximale et de l'hypertrophie.</li>
+            <li><strong style="color: var(--text-main);">Tractions assistées (Élastique) :</strong> Réduction de la charge pour maintenir une forme parfaite et cibler l'amplitude complète.</li>
+        </ul>
+    </div>
+
+    <!-- 2. OBJECTIF PRINCIPAL -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">2. Objectif principal</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 0.85rem;">
+            <div>💪 <strong>Force relative :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+            <div>⚡ <strong>Puissance :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</div>
+            <div>📈 <strong>Volume (Largeur du dos) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>🧱 <strong>Densité musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>🔋 <strong>Endurance musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</div>
+            <div>🎯 <strong>Contrôle scapulaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+        </div>
+    </div>
+
+    <!-- 3. DESCRIPTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">3. Description de l'exercice</h3>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 10px;">
+            Mouvement de référence pour construire la largeur du dos en « V ». En élargissant la prise en pronation, le levier réduit le recrutement des biceps au profit du grand dorsal et du grand rond, exigeant une rétraction scapulaire rigoureuse.
+        </p>
+        <p style="font-size: 0.9rem; color: var(--text-muted);"><strong>Sollicitations principales :</strong> Grand dorsal, grand rond, trapèzes inférieurs et faisceaux postérieurs de l'épaule.</p>
+    </div>
+
+    <!-- 4. POSITION DE DÉPART -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">4. Position de départ</h3>
+        <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.5; color: var(--text-muted);">
+            <li><strong>Saisie :</strong> Mains en pronation (paumes vers l'avant), écartées nettement au-delà des épaules (~1,5x la largeur d'épaules).</li>
+            <li><strong>Suspension :</strong> Bras quasi-tendus sans casser les articulations, omoplates sous contrôle.</li>
+            <li><strong>Gainage :</strong> Sangle abdominale verrouillée et fessiers contractés pour éliminer tout balancement parasite.</li>
+        </ul>
+    </div>
+
+    <!-- 5. EXÉCUTION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">5. Exécution</h3>
+        <ol style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);">
+            <li><strong>Initiation (Dépression scapulaire) :</strong> Abaisse les omoplates vers le bas avant de fléchir les coudes.</li>
+            <li><strong>Phase montante (Concentrique) :</strong> Tire en imaginant enfoncer tes coudes vers le bas et vers tes hanches. Amène le haut du buste vers la barre jusqu'à ce que le menton dépasse la barre.</li>
+            <li><strong>Contraction :</strong> Marque un bref temps d'arrêt en haut en contractant activement le dos.</li>
+            <li><strong>Phase descendante (Excentrique) :</strong> Redescends de manière contrôlée jusqu'à la position bras quasi-tendus.</li>
+        </ol>
+    </div>
+
+    <!-- 6. RESPIRATION -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">6. Respiration</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;"><strong>Rythme :</strong> Inspiration en position basse | Expiration durant le tirage | Inspiration contrôlée à la descente.</p>
+    </div>
+
+    <!-- 7. TEMPO -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">7. Tempo (Descente - Pause basse - Montée - Pause haute)</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div>• <strong>Hypertrophie (3-1-1-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10)</div>
+            <div>• <strong>Explosif (2-0-X-1) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐☆☆ (8/10)</div>
+            <div>• <strong>Focus excentrique (4-1-1-0) :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</div>
+        </div>
+    </div>
+
+    <!-- 8. CONSEILS & 9. ERREURS -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <div style="background: rgba(16, 185, 129, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <h4 style="color: var(--accent-green); font-size: 0.95rem; margin-bottom: 6px;">💡 8. Conseils techniques</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Pense à conduire le mouvement avec les coudes plutôt qu'avec les mains.</li>
+                <li>Garde la cage thoracique ouverte vers la barre en haut du tirage.</li>
+                <li>Utilise des sangles de tirage si le grip lâche avant le grand dorsal sur les séries lourdes.</li>
+            </ul>
+        </div>
+        <div style="background: rgba(239, 68, 68, 0.08); padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+            <h4 style="color: #ef4444; font-size: 0.95rem; margin-bottom: 6px;">❌ 9. Erreurs fréquentes</h4>
+            <ul style="padding-left: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                <li>Tricher avec un balancement de jambes / d'impulsion (kipping).</li>
+                <li>Réduire l'amplitude (ne pas descendre en bas ou ne pas franchir la barre avec le menton).</li>
+                <li>Enrouler les épaules vers l'avant au sommet du tirage.</li>
+                <li>Écarter les mains de façon exagérée, ce qui restreint l'amplitude et stresse l'articulation de l'épaule.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 10. MUSCLES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">10. Muscles sollicités</h3>
+        <div style="font-size: 0.85rem; line-height: 1.6;">
+            <p><strong style="color: var(--accent);">Principaux :</strong> Grand dorsal ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) | Grand rond ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</p>
+            <p><strong style="color: var(--accent-purple);">Secondaires :</strong> Rhomboïdes (8/10) | Trapèze inférieur/moyen (7/10) | Brachial antérieur (7/10) | Biceps brachial (6/10)</p>
+            <p><strong style="color: var(--text-muted);">Stabilisateurs :</strong> Ceinture abdominale / Transverse (6/10) | Avant-bras / Grip (8/10)</p>
+        </div>
+    </div>
+
+    <!-- 11, 12, 13 MATÉRIEL & RÉGLAGES -->
+    <div style="margin-bottom: 20px; font-size: 0.88rem; color: var(--text-muted);">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">11, 12 & 13. Matériel & Réglages</h3>
+        <p><strong>Matériel :</strong> Barre de traction fixe ou rack, ceinture de lest, élastique d'assistance.</p>
+        <p><strong>Écartement :</strong> ~1,3 à 1,5 fois la largeur des épaules (ajuster selon le confort articulaire).</p>
+    </div>
+
+    <!-- 14. CARACTÉRISTIQUES -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">14. Caractéristiques</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; font-size: 0.85rem; color: var(--text-muted);">
+            <div><strong>Type :</strong> Polyarticulaire</div>
+            <div><strong>Mouvement :</strong> Tirage vertical</div>
+            <div><strong>Plan :</strong> Frontal</div>
+            <div><strong>Chaîne :</strong> Postérieure haut</div>
+            <div><strong>Résistance :</strong> Poids du corps / Lest</div>
+            <div><strong>Travail :</strong> Bilatéral</div>
+            <div><strong>Stabilité :</strong> Moyenne</div>
+            <div><strong>Mobilité :</strong> Élevée</div>
+            <div><strong>Amplitude :</strong> Complète</div>
+            <div><strong>Progression :</strong> Excellente</div>
+        </div>
+    </div>
+
+    <!-- 15. COMPATIBILITÉ -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">15. Compatibilité</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+            ✅ <strong>Compatible :</strong> Exercice premier en séance Dos/Pull, Supersets (avec Développé couché ou Dips), Rest-Pause, EMOM.<br>
+            ⚠️ <strong>À adapter :</strong> Réduire la largeur de prise ou passer en prise neutre en cas d'inconfort au niveau de l'épaule.
+        </p>
+    </div>
+
+    <!-- 16 & 17 PROGRESSION & RÉGRESSION -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; font-size: 0.85rem;">
+        <div>
+            <h4 style="color: var(--accent);">📈 16. Progression</h4>
+            <p style="color: var(--text-muted);">Lester avec ceinture/gilet • Augmenter la pause isométrique en haut • Accentuer le contrôle excentrique (4s à 5s).</p>
+        </div>
+        <div>
+            <h4 style="color: var(--accent-purple);">📉 17. Régression</h4>
+            <p style="color: var(--text-muted);">Utiliser une bande élastique d'assistance • Faire des rép' négatives (sauter puis freiner la descente) • Tirage poitrine à la poulie haute.</p>
+        </div>
+    </div>
+
+    <!-- 18. PERFORMANCES DE RÉFÉRENCE -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-green); font-size: 1.1rem; margin-bottom: 8px;">18. Performances de référence</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-size: 0.85rem; text-align: center;">
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌱 <strong>Débutant</strong><br>3 à 5 reps (PDC)</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌿 <strong>Intermédiaire</strong><br>10 à 12 reps (PDC)</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">🌳 <strong>Avancé</strong><br>5 reps @ +15kg</div>
+            <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">👑 <strong>Expert</strong><br>5 reps @ +30kg</div>
+        </div>
+    </div>
+
+    <!-- 19. ADMIN -->
+    <div class="admin-only" style="background: rgba(59, 130, 246, 0.08); border: 1px dashed var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem;">
+        <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 8px;">⚙️ 19. Données internes & Commentaires (Admin)</h3>
+        <ul style="list-style: none; line-height: 1.6; color: var(--text-muted); margin-bottom: 12px;">
+            <li>🧠 <strong>Fatigue nerveuse :</strong> ⭐⭐⭐⭐⭐⭐⭐☆☆☆ (7/10)</li>
+            <li>💥 <strong>Fatigue musculaire :</strong> ⭐⭐⭐⭐⭐⭐⭐⭐⭐☆ (9/10)</li>
+            <li>🛡️ <strong>Risque de blessure :</strong> ⭐⭐⭐☆☆☆☆☆☆☆ (3/10)</li>
+            <li>⏱️ <strong>Récupération conseillée :</strong> 48 heures</li>
+            <li>⭐ <strong>Scores globaux :</strong> Hypertrophie Grand Dorsal (10/10) | Transfert Force (9/10)</li>
+        </ul>
+        <div style="border-top: 1px solid var(--border); padding-top: 10px; font-style: italic; color: var(--text-muted);">
+            <p>💬 <strong>Commentaires :</strong> Indispensable pour la largeur du dos. Si le grip flanche avant le dos sur les séries chargées, ne pas hésiter à mettre des sangles.</p>
+        </div>
+    </div>
+</div>
+    </div>
+    <!-- SCRIPTS DE GESTION DES MODALES ET DE L'ACCÈS ADMIN -->
+    <script>
+        // Vérification du code admin
+        function checkAdminCode() {
+            const val = document.getElementById('admin-code-input').value;
+            const badge = document.getElementById('admin-status');
+            
+            // Validation avec le code exact ou sans l'espace du début
+            if (val === " Arthur Krokmou" || val === "Arthur Krokmou") {
+                document.body.classList.add('admin-mode');
+                badge.innerText = "🔓 Mode Admin Déverrouillé";
+                badge.classList.add('unlocked');
+            } else {
+                document.body.classList.remove('admin-mode');
+                badge.innerText = "🔒 Mode Utilisateur";
+                badge.classList.remove('unlocked');
+            }
+        }
+
+        // Ouverture de la modale d'exercice
+        function openExerciseModal(sheetId) {
+            const sheetHtml = document.getElementById(sheetId).innerHTML;
+            document.getElementById('modal-body').innerHTML = sheetHtml;
+            document.getElementById('exercise-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeExerciseModal(event) {
+            if (event.target.id === 'exercise-modal') {
+                closeExerciseModalDirect();
+            }
+        }
+
+        function closeExerciseModalDirect() {
+            document.getElementById('exercise-modal').classList.remove('active');
+            document.getElementById('modal-body').innerHTML = '';
+            document.body.style.overflow = '';
+        }
+
+        // Fermeture avec Échap
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeExerciseModalDirect();
+            }
+        });
+    </script>
+</body>
+</html>

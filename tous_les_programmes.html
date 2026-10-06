@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff9900">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script src="theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue & Planification - Mon Carnet Sportif</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --accent: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-gold: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --border: #334155;
+            --glow-gold: rgba(245, 158, 11, 0.25);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 20px; max-width: 600px; margin: 0 auto; }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .btn-back { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.2s ease; }
+        .btn-back:hover { border-color: var(--accent-gold); }
+
+        .mascotte-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+            border: 1px solid var(--accent-gold);
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px var(--glow-gold);
+        }
+
+        .mascotte-img {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .mascotte-bubble {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 0.82rem;
+            color: var(--text-main);
+            line-height: 1.35;
+            flex: 1;
+            position: relative;
+        }
+
+        .mascotte-bubble::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 6px 8px 6px 0;
+            border-style: solid;
+            border-color: transparent var(--border) transparent transparent;
+        }
+
+        .program-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 800; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+        select, input[type="time"] {
+            width: 100%;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 11px 13px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        select:focus, input[type="time"]:focus {
+            border-color: var(--accent-blue);
+        }
+
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.8);
+            cursor: pointer;
+        }
+
+        .days-picker {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .day-checkbox { display: none; }
+        .day-label {
+            flex: 1;
+            text-align: center;
+            padding: 9px 0;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            color: var(--text-muted);
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .day-checkbox:checked + .day-label {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+
+        .auto-schedule-box {
+            background: linear-gradient(180deg, rgba(59, 130, 246, 0.12), rgba(15, 23, 42, 0.4));
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .week-divider {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 20px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .seance-item {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .seance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .seance-title {
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--accent-blue);
+        }
+
+        .reorder-btns {
+            display: flex;
+            gap: 4px;
+        }
+
+        .btn-move {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: border-color 0.2s;
+        }
+
+        .btn-move:hover:not(:disabled) {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        .btn-move:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        .seance-row { display: flex; gap: 10px; align-items: center; }
+
+        .date-auto-badge {
+            flex: 1;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 11px 13px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-gold), #d97706);
+            color: #0f172a;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px var(--glow-gold);
+            transition: transform 0.15s ease;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        .info-badge {
+            font-size: 0.72rem;
+            color: var(--accent-gold);
+            margin-top: 6px;
+            display: block;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 style="font-size: 1.2rem; color: var(--accent-gold); display: flex; align-items: center; gap: 8px;">
+            📚 Catalogue & Planification
+        </h1>
+        <a href="mes_programmes.html" class="btn-back">🗺️ Mon Parcours</a>
+    </header>
+
+    <div class="mascotte-card">
+        <img src="images/mascotte.png" alt="Coach Mascotte" class="mascotte-img">
+        <div class="mascotte-bubble">
+            <span id="mascotteText">Choisis ton programme, fixe tes jours d'entraînement et les dates se calculent toutes seules ! ⚡</span>
+        </div>
+    </div>
+
+    <div class="program-card">
+        <div class="form-group">
+            <label for="catalogSelect">Sélectionner un programme du catalogue</label>
+            <select id="catalogSelect"></select>
+        </div>
+
+        <div class="auto-schedule-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.85rem; font-weight: 800; color: var(--accent-blue);">📅 Jours d'Entraînement</span>
+                <span style="font-size: 0.7rem; background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); padding: 2px 6px; border-radius: 4px; font-weight: 700;">AUTOMATIQUE</span>
+            </div>
+
+            <div class="form-group" style="margin-top: 12px; margin-bottom: 0;">
+                <div class="days-picker">
+                    <input type="checkbox" id="day-1" value="1" class="day-checkbox"><label for="day-1" class="day-label">Lun</label>
+                    <input type="checkbox" id="day-2" value="2" class="day-checkbox"><label for="day-2" class="day-label">Mar</label>
+                    <input type="checkbox" id="day-3" value="3" class="day-checkbox"><label for="day-3" class="day-label">Mer</label>
+                    <input type="checkbox" id="day-4" value="4" class="day-checkbox"><label for="day-4" class="day-label">Jeu</label>
+                    <input type="checkbox" id="day-5" value="5" class="day-checkbox"><label for="day-5" class="day-label">Ven</label>
+                    <input type="checkbox" id="day-6" value="6" class="day-checkbox"><label for="day-6" class="day-label">Sam</label>
+                    <input type="checkbox" id="day-0" value="0" class="day-checkbox"><label for="day-0" class="day-label">Dim</label>
+                </div>
+                <span class="info-badge" id="daysConstraintText">🎯 Tu dois sélectionner exactement 5 jours.</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="color: var(--text-main);">📜 Ordre & Dates calculées</label>
+            <div id="seancesList"></div>
+        </div>
+
+        <button type="button" class="btn" id="btnSubmit">🔥 Activer ce programme</button>
+    </div>
+
+    <script type="module">
+        import { auth } from "./firebase-config.js";
+        import { chargerDonneesCloud, sauvegarderDonneesCloud } from "./storage.js";
+
+        const activeProfile = sessionStorage.getItem("activeProfile") || "Principal";
+
+        const CATALOGUE = [
+            {
+                id: "prog_official_2weeks_ab",
+                title: "Cycle 2 Semaines A/B (10 Séances)",
+                desc: "Cycle complet de 10 séances articulé autour des mouvements polyarticulaires et d'isolation.",
+                joursParSemaine: 5,
+                seances: [
+                    {
+                        id: "s1", semaine: "A", nom: "Upper A", horaire: "18:00",
+                        exercices: [
+                            { nom: "Tractions prise large [ancre]", series: "3-4", reps: "2 reps propres", muscle: "Dos largeur, biceps" },
+                            { nom: "Pompes [ancre]", series: 3, reps: "6-8", muscle: "Pecs, triceps, delt antérieur" },
+                            { nom: "Développé épaules haltères", series: 3, reps: "10-12", muscle: "Deltoïde latéral, triceps" },
+                            { nom: "Rowing haltère un bras (lourd)", series: 3, reps: "10-12/bras", muscle: "Dos épaisseur, biceps" },
+                            { nom: "Curl biceps haltères", series: 3, reps: "10-12", muscle: "Biceps" },
+                            { nom: "Curl poignet haltères", series: 3, reps: "15-20", muscle: "Avant-bras" },
+                            { nom: "Relevé de jambes suspendu", series: 3, reps: "10-15", muscle: "Abdominaux" }
+                        ]
+                    },
+                    {
+                        id: "s2", semaine: "A", nom: "Lower A", horaire: "18:00",
+                        exercices: [
+                            { nom: "Squat (barre ou gobelet)", series: 4, reps: "8-10", muscle: "Quadriceps" },
+                            { nom: "Soulevé de terre jambes tendues", series: 4, reps: "8-10", muscle: "Ischio-jambiers" },
+                            { nom: "Fentes marchées haltères", series: 3, reps: "10-12 par jambe", muscle: "Quadriceps / Fessiers" },
+                            { nom: "Leg curl assis ou allongé", series: 3, reps: "12-15", muscle: "Ischio-jambiers" },
+                            { nom: "Mollets debout", series: 4, reps: "15-20", muscle: "Mollets" }
+                        ]
+                    },
+                    {
+                        id: "s3", semaine: "A", nom: "Push A", horaire: "18:00",
+                        exercices: [
+                            { nom: "Développé couché barre/haltères", series: 4, reps: "6-8", muscle: "Pectoraux" },
+                            { nom: "Développé incliné haltères", series: 3, reps: "10-12", muscle: "Haut pectoraux" },
+                            { nom: "Dips au poids du corps ou lestés", series: 3, reps: "8-10", muscle: "Pectoraux / Triceps" },
+                            { nom: "Élévations latérales haltères", series: 4, reps: "12-15", muscle: "Deltoïde latéral" },
+                            { nom: "Barre au front / Extension triceps", series: 3, reps: "10-12", muscle: "Triceps" }
+                        ]
+                    },
+                    {
+                        id: "s4", semaine: "A", nom: "Pull A", horaire: "18:00",
+                        exercices: [
+                            { nom: "Tractions pronation", series: 4, reps: "6-8", muscle: "Grand dorsal" },
+                            { nom: "Rowing barre ou buste penché", series: 4, reps: "8-10", muscle: "Épaisseur du dos" },
+                            { nom: "Tirage horizontal poulie / élastique", series: 3, reps: "10-12", muscle: "Moyen trapèze" },
+                            { nom: "Oiseau haltères / Facepull", series: 4, reps: "15-20", muscle: "Deltoïde postérieur" },
+                            { nom: "Curl supination haltères", series: 3, reps: "10-12", muscle: "Biceps" }
+                        ]
+                    },
+                    {
+                        id: "s5", semaine: "A", nom: "Legs A", horaire: "18:00",
+                        exercices: [
+                            { nom: "Presse à cuisses / Hack squat", series: 4, reps: "10-12", muscle: "Quadriceps" },
+                            { nom: "Hip Thrust barre/haltère", series: 4, reps: "10-12", muscle: "Fessiers" },
+                            { nom: "Leg extension", series: 3, reps: "12-15", muscle: "Quadriceps" },
+                            { nom: "Leg curl", series: 3, reps: "12-15", muscle: "Ischio-jambiers" },
+                            { nom: "Mollets assis", series: 4, reps: "15-20", muscle: "Soléaire" }
+                        ]
+                    },
+                    {
+                        id: "s6", semaine: "B", nom: "Upper B", horaire: "18:00",
+                        exercices: [
+                            { nom: "Tractions prise large [ancre]", series: "3-4", reps: "2 reps propres", muscle: "Dos largeur, biceps" },
+                            { nom: "Pompes [ancre]", series: 3, reps: "6-8", muscle: "Pecs, triceps, delt antérieur" },
+                            { nom: "Élévations latérales haltères", series: 3, reps: "12-15", muscle: "Deltoïde latéral" },
+                            { nom: "Rowing buste penché (2 haltères)", series: 3, reps: "10-12", muscle: "Dos largeur, deltoïde postérieur" },
+                            { nom: "Curl marteau", series: 3, reps: "10-12", muscle: "Biceps" },
+                            { nom: "Extension poignet haltère", series: 3, reps: "15-20", muscle: "Avant-bras" },
+                            { nom: "Planche", series: 3, reps: "20-25s", muscle: "Abdominaux" }
+                        ]
+                    },
+                    {
+                        id: "s7", semaine: "B", nom: "Lower B", horaire: "18:00",
+                        exercices: [
+                            { nom: "Soulevé de terre conventionnel ou sumo", series: 4, reps: "6-8", muscle: "Chaîne postérieure" },
+                            { nom: "Front squat / Goblet squat", series: 3, reps: "10-12", muscle: "Quadriceps" },
+                            { nom: "Bulgarian split squat", series: 3, reps: "10-12 par jambe", muscle: "Quadriceps / Fessiers" },
+                            { nom: "Leg curl allongé", series: 3, reps: "12-15", muscle: "Ischio-jambiers" },
+                            { nom: "Mollets debout unilatéral", series: 4, reps: "12-15", muscle: "Mollets" }
+                        ]
+                    },
+                    {
+                        id: "s8", semaine: "B", nom: "Push B", horaire: "18:00",
+                        exercices: [
+                            { nom: "Développé militaire debout", series: 4, reps: "6-8", muscle: "Épaules" },
+                            { nom: "Développé couché haltères", series: 4, reps: "8-10", muscle: "Pectoraux" },
+                            { nom: "Écarté couché haltères / poulie", series: 3, reps: "12-15", muscle: "Pectoraux" },
+                            { nom: "Élévations latérales poulie / haltères", series: 4, reps: "12-15", muscle: "Deltoïde latéral" },
+                            { nom: "Extension triceps au-dessus de la tête", series: 3, reps: "10-12", muscle: "Triceps long chef" }
+                        ]
+                    },
+                    {
+                        id: "s9", semaine: "B", nom: "Pull B", horaire: "18:00",
+                        exercices: [
+                            { nom: "Tractions supination", series: 4, reps: "6-8", muscle: "Grand dorsal / Biceps" },
+                            { nom: "Rowing T-Bar / Rowing Meadows", series: 4, reps: "8-10", muscle: "Épaisseur du dos" },
+                            { nom: "Pull-over poulie haute / élastique", series: 3, reps: "12-15", muscle: "Grand dorsal" },
+                            { nom: "Facepull poulie", series: 4, reps: "15-20", muscle: "Deltoïde postérieur" },
+                            { nom: "Curl incliné haltères", series: 3, reps: "10-12", muscle: "Biceps long chef" }
+                        ]
+                    },
+                    {
+                        id: "s10", semaine: "B", nom: "Legs B", horaire: "18:00",
+                        exercices: [
+                            { nom: "Squat bulgare lourd", series: 4, reps: "8-10", muscle: "Quadriceps / Fessiers" },
+                            { nom: "Soulevé de terre roumain", series: 4, reps: "8-10", muscle: "Ischio-jambiers / Fessiers" },
+                            { nom: "Leg extension unilatéral", series: 3, reps: "12-15", muscle: "Quadriceps" },
+                            { nom: "Glute ham raise / Hyperextension", series: 3, reps: "12-15", muscle: "Ischio-jambiers" },
+                            { nom: "Mollets à la presse", series: 4, reps: "15-20", muscle: "Mollets" }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "prog_official_1week_ppl",
+                title: "Cycle Express 1 Semaine PPL (5 Séances)",
+                desc: "Un cycle rapide axé Push / Pull / Legs sur une semaine.",
+                joursParSemaine: 5,
+                seances: [
+                    { 
+                        id: "sp1", semaine: "1", nom: "Push", horaire: "18:00",
+                        exercices: [
+                            { nom: "Développé couché haltères", series: 4, reps: "8-10", muscle: "Pectoraux" },
+                            { nom: "Développé militaire haltères", series: 3, reps: "10-12", muscle: "Épaules" },
+                            { nom: "Dips", series: 3, reps: "8-10", muscle: "Pectoraux / Triceps" },
+                            { nom: "Élévations latérales", series: 4, reps: "12-15", muscle: "Épaules" },
+                            { nom: "Extension triceps poulie", series: 3, reps: "12-15", muscle: "Triceps" }
+                        ]
+                    },
+                    { 
+                        id: "sp2", semaine: "1", nom: "Pull", horaire: "18:00",
+                        exercices: [
+                            { nom: "Tractions pronation", series: 4, reps: "6-8", muscle: "Grand dorsal" },
+                            { nom: "Rowing barre", series: 4, reps: "8-10", muscle: "Dos" },
+                            { nom: "Tirage horizontal", series: 3, reps: "10-12", muscle: "Moyen trapèze" },
+                            { nom: "Oiseau haltères", series: 4, reps: "15-20", muscle: "Deltoïde postérieur" },
+                            { nom: "Curl biceps haltères", series: 3, reps: "10-12", muscle: "Biceps" }
+                        ]
+                    },
+                    { 
+                        id: "sp3", semaine: "1", nom: "Legs", horaire: "18:00",
+                        exercices: [
+                            { nom: "Squat", series: 4, reps: "8-10", muscle: "Quadriceps" },
+                            { nom: "Soulevé de terre jambes tendues", series: 4, reps: "8-10", muscle: "Ischio-jambiers" },
+                            { nom: "Fentes marchées", series: 3, reps: "10-12 par jambe", muscle: "Fessiers / Quads" },
+                            { nom: "Leg extension", series: 3, reps: "12-15", muscle: "Quadriceps" },
+                            { nom: "Mollets debout", series: 4, reps: "15-20", muscle: "Mollets" }
+                        ]
+                    },
+                    { 
+                        id: "sp4", semaine: "1", nom: "Upper Focus", horaire: "18:00",
+                        exercices: [
+                            { nom: "Développé incliné haltères", series: 4, reps: "8-10", muscle: "Pectoraux" },
+                            { nom: "Tirage vertical", series: 4, reps: "8-10", muscle: "Grand dorsal" },
+                            { nom: "Rowing haltère unilatéral", series: 3, reps: "10-12", muscle: "Dos" },
+                            { nom: "Élévations latérales", series: 4, reps: "12-15", muscle: "Épaules" },
+                            { nom: "Curl marteau", series: 3, reps: "12-15", muscle: "Biceps" },
+                            { nom: "Barre au front", series: 3, reps: "10-12", muscle: "Triceps" }
+                        ]
+                    },
+                    { 
+                        id: "sp5", semaine: "1", nom: "Lower Focus", horaire: "18:00",
+                        exercices: [
+                            { nom: "Presse à cuisses", series: 4, reps: "10-12", muscle: "Quadriceps" },
+                            { nom: "Hip Thrust", series: 4, reps: "10-12", muscle: "Fessiers" },
+                            { nom: "Leg curl", series: 3, reps: "12-15", muscle: "Ischio-jambiers" },
+                            { nom: "Mollets assis", series: 4, reps: "15-20", muscle: "Mollets" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        let currentProgramState = null;
+        let myPrograms = [];
+
+        window.moveSeance = moveSeance;
+        window.updateHoraire = updateHoraire;
+
+        loadLocalPrograms();
+        initPage();
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                try {
+                    const cloud = await chargerDonneesCloud("activePrograms");
+                    if (cloud && cloud[activeProfile]) {
+                        myPrograms = cloud[activeProfile];
+                        onProgramChange();
+                    }
+                } catch(e) {
+                    console.log("Erreur chargement cloud :", e);
+                }
+            }
+        });
+
+        function loadLocalPrograms() {
+            const local = localStorage.getItem(`activePrograms_${activeProfile}`);
+            if (local) {
+                try { myPrograms = JSON.parse(local); } catch(e){ myPrograms = []; }
+            } else {
+                myPrograms = [];
+            }
+        }
+
+        function initPage() {
+            const select = document.getElementById("catalogSelect");
+            select.innerHTML = "";
+            CATALOGUE.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.id;
+                opt.textContent = p.title;
+                select.appendChild(opt);
+            });
+
+            select.addEventListener("change", onProgramChange);
+            document.getElementById("btnSubmit").addEventListener("click", saveProgram);
+
+            document.querySelectorAll('.day-checkbox').forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    enforceDaysConstraint(e);
+                    computeAutoDates();
+                    renderSeances();
+                });
+            });
+
+            onProgramChange();
+        }
+
+        function updateActionBtnState() {
+            const btn = document.getElementById("btnSubmit");
+            if (!currentProgramState) return;
+            
+            const isAlreadyActive = myPrograms.some(p => p.id === currentProgramState.id && p.status === "actif");
+            if (isAlreadyActive) {
+                btn.textContent = "✏️ Modifier ce programme";
+            } else {
+                btn.textContent = "🔥 Activer ce programme";
+            }
+        }
+
+        function onProgramChange() {
+            const selectedId = document.getElementById("catalogSelect").value;
+            const template = CATALOGUE.find(p => p.id === selectedId);
+            
+            const existing = myPrograms.find(p => p.id === selectedId && p.status === "actif");
+
+            if (existing && existing.seances && existing.seances.length > 0) {
+                currentProgramState = {
+                    id: existing.id,
+                    title: existing.nom,
+                    desc: existing.desc,
+                    joursParSemaine: template ? template.joursParSemaine : 5,
+                    seances: JSON.parse(JSON.stringify(existing.seances))
+                };
+            } else {
+                const cleanTemplate = JSON.parse(JSON.stringify(template));
+                cleanTemplate.seances.forEach(s => s.completed = false);
+                currentProgramState = cleanTemplate;
+            }
+
+            let daysToApply = [1, 2, 4, 5, 6];
+            if (existing && existing.joursChoisis && Array.isArray(existing.joursChoisis) && existing.joursChoisis.length > 0) {
+                daysToApply = existing.joursChoisis;
+            }
+
+            document.querySelectorAll('.day-checkbox').forEach(cb => {
+                cb.checked = daysToApply.includes(parseInt(cb.value));
+            });
+
+            updateDaysConstraintUI();
+            computeAutoDates();
+            renderSeances();
+            updateActionBtnState();
+        }
+
+        function enforceDaysConstraint(e) {
+            const checked = document.querySelectorAll('.day-checkbox:checked');
+            const targetCount = currentProgramState.joursParSemaine;
+
+            if (checked.length > targetCount) {
+                e.target.checked = false;
+                alert(`Tu peux choisir exactement ${targetCount} jours d'entraînement par semaine.`);
+            }
+            updateDaysConstraintUI();
+        }
+
+        function updateDaysConstraintUI() {
+            const checkedCount = document.querySelectorAll('.day-checkbox:checked').length;
+            const targetCount = currentProgramState.joursParSemaine;
+            const infoTxt = document.getElementById("daysConstraintText");
+
+            infoTxt.textContent = `🎯 Jours sélectionnés : ${checkedCount} / ${targetCount}`;
+            infoTxt.style.color = (checkedCount === targetCount) ? "var(--accent)" : "var(--accent-gold)";
+        }
+
+        function computeAutoDates() {
+            if (!currentProgramState) return;
+            const selectedDays = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => parseInt(cb.value));
+            if (selectedDays.length === 0) return;
+
+            let currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+
+            currentProgramState.seances.forEach((s) => {
+                while (!selectedDays.includes(currentDate.getDay())) {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+
+                const year = currentDate.getFullYear();
+                const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                const day = String(currentDate.getDate()).padStart(2, '0');
+                
+                s.date = `${year}-${month}-${day}`;
+                currentDate.setDate(currentDate.getDate() + 1);
+            });
+        }
+
+        function formatDateFR(isoDateStr) {
+            if (!isoDateStr) return "Non définie";
+            const [y, m, d] = isoDateStr.split("-");
+            const dateObj = new Date(y, m - 1, d);
+            const options = { weekday: 'short', day: 'numeric', month: 'short' };
+            return dateObj.toLocaleDateString('fr-FR', options);
+        }
+
+        function renderSeances() {
+            const container = document.getElementById("seancesList");
+            container.innerHTML = "";
+
+            let currentSem = "";
+
+            currentProgramState.seances.forEach((s, idx) => {
+                if (s.semaine && s.semaine !== currentSem) {
+                    currentSem = s.semaine;
+                    const divider = document.createElement("div");
+                    divider.className = "week-divider";
+                    divider.innerHTML = `🛡️ Semaine ${s.semaine}`;
+                    container.appendChild(divider);
+                }
+
+                const div = document.createElement("div");
+                div.className = "seance-item";
+                div.innerHTML = `
+                    <div class="seance-header">
+                        <span class="seance-title">${idx + 1}. ${s.nom}</span>
+                        <div class="reorder-btns">
+                            <button type="button" class="btn-move" onclick="window.moveSeance(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
+                            <button type="button" class="btn-move" onclick="window.moveSeance(${idx}, 1)" ${idx === currentProgramState.seances.length - 1 ? 'disabled' : ''}>▼</button>
+                        </div>
+                    </div>
+                    <div class="seance-row">
+                        <div class="date-auto-badge">
+                            📅 ${formatDateFR(s.date)}
+                        </div>
+                        <div style="flex: 1;">
+                            <input type="time" class="seance-horaire" value="${s.horaire || '18:00'}" onchange="window.updateHoraire(${idx}, this.value)">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateHoraire(idx, val) {
+            if (currentProgramState && currentProgramState.seances[idx]) {
+                currentProgramState.seances[idx].horaire = val;
+            }
+        }
+
+        function moveSeance(index, direction) {
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= currentProgramState.seances.length) return;
+
+            const temp = currentProgramState.seances[index];
+            currentProgramState.seances[index] = currentProgramState.seances[targetIndex];
+            currentProgramState.seances[targetIndex] = temp;
+
+            computeAutoDates();
+            renderSeances();
+        }
+
+        async function saveProgram() {
+            const checkedBoxes = Array.from(document.querySelectorAll('.day-checkbox:checked'));
+            const checkedCount = checkedBoxes.length;
+            if (checkedCount !== currentProgramState.joursParSemaine) {
+                alert(`Tu dois sélectionner exactement ${currentProgramState.joursParSemaine} jours d'entraînement.`);
+                return;
+            }
+
+            const selectedDays = checkedBoxes.map(cb => parseInt(cb.value));
+            computeAutoDates();
+
+            const existingIndex = myPrograms.findIndex(p => p.id === currentProgramState.id);
+            const isEditingActive = existingIndex >= 0 && myPrograms[existingIndex].status === "actif";
+
+            const activeProg = {
+                id: currentProgramState.id,
+                nom: currentProgramState.title,
+                desc: currentProgramState.desc || `${currentProgramState.seances.length} séances programmées`,
+                freq: `${currentProgramState.joursParSemaine} séances / semaine`,
+                status: "actif",
+                joursChoisis: selectedDays,
+                seances: currentProgramState.seances.map(s => ({
+                    nom: s.nom,
+                    semaine: s.semaine,
+                    date: s.date,
+                    horaire: s.horaire || "18:00",
+                    completed: isEditingActive ? (s.completed || false) : false,
+                    exercices: s.exercices || []
+                }))
+            };
+
+            if (existingIndex >= 0) {
+                myPrograms[existingIndex] = activeProg;
+            } else {
+                myPrograms.push(activeProg);
+            }
+
+            localStorage.setItem(`activePrograms_${activeProfile}`, JSON.stringify(myPrograms));
+            
+            if (auth.currentUser) {
+                try {
+                    const cloud = await chargerDonneesCloud("activePrograms") || {};
+                    cloud[activeProfile] = myPrograms;
+                    await sauvegarderDonneesCloud("activePrograms", cloud);
+                } catch(e) {
+                    console.error("Erreur de sauvegarde Cloud :", e);
+                }
+            }
+
+            window.location.href = "mes_programmes.html";
+        }
+    </script>
+</body>
+</html>

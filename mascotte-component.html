@@ -1,0 +1,61 @@
+<!-- Début du composant Mascotte -->
+<style>
+  .mascot-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #1e1e24;
+    border: 2px solid #2e2e38;
+    border-radius: 18px;
+    padding: 12px 18px;
+    margin: 15px 0;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .mascot-img {
+    width: 75px;
+    height: auto;
+    flex-shrink: 0;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+    transition: transform 0.2s ease;
+  }
+
+  .mascot-img:hover {
+    transform: scale(1.05) rotate(-3deg);
+  }
+
+  .mascot-bubble {
+    position: relative;
+    background: #ffffff;
+    color: #121214;
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .mascot-bubble::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 7px 9px 7px 0;
+    border-style: solid;
+    border-color: transparent #ffffff transparent transparent;
+  }
+
+  .mascot-bubble strong {
+    color: #ff9900;
+  }
+</style>
+
+<div id="mascot-container" class="mascot-wrapper">
+  <img src="images/mascotte.png" alt="Mascotte Dragon" class="mascot-img">
+  <div class="mascot-bubble">
+    <p id="mascot-text" style="margin: 0;">Chargement de ton accompagnateur...</p>
+  </div>
+</div>
+<!-- Fin du composant Mascotte -->

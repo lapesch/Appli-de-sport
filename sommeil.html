@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- Fichier Web Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Personnalisation de la barre d'état Android -->
+<meta name="theme-color" content="#ff9900">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi du Sommeil - Mon Carnet Sportif</title>
+    <link rel="stylesheet" href="style-dashboard.css">
+    <link rel="stylesheet" href="style-sommeil.css">
+</head>
+<body>
+
+    <div class="sommeil-container">
+        
+        <!-- BARRE DE NAVIGATION -->
+        <header class="sommeil-header">
+            <h1>🌙 Suivi du Sommeil</h1>
+            <button onclick="window.location.href='services.html'" class="btn-retour">← Services</button>
+        </header>
+
+        <!-- 2. EN-TÊTE D'ÉTAT ET RÉCUPÉRATION -->
+        <section id="card-recuperation" class="card-recuperation status-vert">
+            <div class="recup-main">
+                <div class="badge-status">
+                    <span id="pille-lumineuse" class="pille pille-verte"></span>
+                    <span id="score-pourcentage" class="score-valeur">--%</span>
+                </div>
+                <div class="recup-details">
+                    <h3>Score de Récupération</h3>
+                    <p id="rappel-nuit">Chargement des données...</p>
+                </div>
+            </div>
+            <p id="message-conseil-sportif" class="message-conseil">Calcul de ton état de forme...</p>
+        </section>
+
+        <!-- 3. BLOC D'ACTION MANUELLE -->
+        <section class="action-block">
+            <button id="btn-open-modal" onclick="ouvrirModalSaisie()" class="btn-action-manuelle">
+                ✏️ Modifier / Saisir la nuit d'aujourd'hui
+            </button>
+        </section>
+
+        <!-- 4. GRAPHIQUE HEBDOMADAIRE -->
+        <section class="card-sommeil">
+            <h3>📊 Historique des 7 derniers jours</h3>
+            <div class="chart-container">
+                <div id="target-line" class="target-line"><span id="target-label">8h00</span></div>
+                <div id="bars-container" class="bars-container">
+                    <!-- Les barres seront générées dynamiquement en JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. STATISTIQUES ET TENDANCES -->
+        <section class="grid-stats">
+            <div class="card-stat">
+                <h4>Moyenne 7j</h4>
+                <div id="stat-moyenne-valeur" class="stat-big-valeur">-- h --</div>
+                <div id="stat-moyenne-tendance" class="stat-tendance">--</div>
+            </div>
+            <div class="card-stat">
+                <h4>Facteur frein</h4>
+                <div id="stat-frein-nom" class="stat-big-valeur frein-texte">Aucun</div>
+                <div id="stat-frein-count" class="stat-subtext">0 nuit impactée</div>
+            </div>
+        </section>
+
+        <!-- 6. RÉGLAGES ET OBJECTIFS -->
+        <section class="card-sommeil settings-block">
+            <h3>⚙️ Réglages & Objectifs</h3>
+            <form id="form-settings" onsubmit="sauvegarderReglages(event)">
+                <div class="setting-row">
+                    <label for="set-target-hours">Objectif de sommeil :</label>
+                    <select id="set-target-hours">
+                        <option value="6">6 h 00</option>
+                        <option value="6.5">6 h 30</option>
+                        <option value="7">7 h 00</option>
+                        <option value="7.5">7 h 30</option>
+                        <option value="8" selected>8 h 00</option>
+                        <option value="8.5">8 h 30</option>
+                        <option value="9">9 h 00</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <label for="set-target-bedtime">Coucher cible :</label>
+                    <input type="time" id="set-target-bedtime" value="22:30">
+                </div>
+                <div class="setting-row toggle-row">
+                    <label for="set-reminder-toggle">Rappel de coucher :</label>
+                    <input type="checkbox" id="set-reminder-toggle" checked>
+                </div>
+                <button type="submit" class="btn-save-settings">Enregistrer les réglages</button>
+            </form>
+          <div class="setting-row">
+    <label for="set-mode-coucher">Mode de coucher :</label>
+    <select id="set-mode-coucher" onchange="toggleModeCoucher(this.value)">
+        <option value="manuel">Manuel (Heure fixe)</option>
+        <option value="auto">Automatique (Selon la séance du jour)</option>
+    </select>
+</div>
+
+<div class="setting-row" id="row-bedtime-manual">
+    <label for="set-target-bedtime">Coucher cible :</label>
+    <input type="time" id="set-target-bedtime" value="22:30">
+</div>
+
+<div class="setting-row" id="row-bedtime-info" style="display: none;">
+    <p class="info-auto">💡 L'heure sera ajustée automatiquement chaque soir selon l'intensité de ta séance enregistrée.</p>
+</div>
+        </section>
+
+    </div>
+
+    <!-- 1. MODAL DE SAISIE MATINALE (POP-UP) -->
+    <div id="modal-saisie" class="modal-overlay">
+        <div class="modal-box-sommeil">
+            <h2 id="modal-date-titre">Ta nuit du --</h2>
+            
+            <div class="recap-horaires">
+                <div class="time-picker-group">
+                    <label>Coucher</label>
+                    <input type="time" id="input-time-coucher">
+                </div>
+                <div class="time-picker-group">
+                    <label>Réveil</label>
+                    <input type="time" id="input-time-reveil">
+                </div>
+            </div>
+            <div id="calcul-duree-preview" class="duree-preview">Durée estimée : --h--</div>
+
+            <hr class="divider">
+
+            <!-- Sélecteur de qualité -->
+            <label class="section-label">Qualité de nuit (1 à 5)</label>
+            <div class="rating-stars">
+                <span class="star" onclick="setNote(1)">★</span>
+                <span class="star" onclick="setNote(2)">★</span>
+                <span class="star" onclick="setNote(3)">★</span>
+                <span class="star" onclick="setNote(4)">★</span>
+                <span class="star" onclick="setNote(5)">★</span>
+            </div>
+
+            <!-- État au réveil -->
+            <label class="section-label">État au réveil</label>
+            <div class="badges-radio">
+                <button type="button" class="btn-badge state-vert" onclick="setEtat('forme')">⚡ En forme</button>
+                <button type="button" class="btn-badge state-orange" onclick="setEtat('passable')">😐 Passable</button>
+                <button type="button" class="btn-badge state-rouge" onclick="setEtat('epuise')">😴 Épuisé</button>
+            </div>
+
+            <!-- Perturbateurs -->
+            <label class="section-label">Perturbateurs détectés</label>
+            <div class="checkbox-grid">
+                <label><input type="checkbox" value="ecrans" class="chk-frein"> Écrans tard</label>
+                <label><input type="checkbox" value="cafeine" class="chk-frein"> Caféine après 16 h</label>
+                <label><input type="checkbox" value="repas" class="chk-frein"> Repas lourd</label>
+                <label><input type="checkbox" value="reveils" class="chk-frein"> Réveils nocturnes</label>
+                <label><input type="checkbox" value="stress" class="chk-frein"> Stress</label>
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="validerNuit()" class="btn-valider">Valider la nuit</button>
+                <button onclick="fermerModalSaisie()" class="btn-fermer">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script type="module" src="sommeil.js"></script>
+</body>
+</html>

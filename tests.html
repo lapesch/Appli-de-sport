@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff9900">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script src="theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tests et Évaluations</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --accent: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        }
+
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            padding: 20px; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+        }
+
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 25px; 
+            padding-bottom: 15px; 
+            border-bottom: 1px solid var(--border); 
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-back { 
+            background: var(--bg-card); 
+            color: var(--text-main); 
+            border: 1px solid var(--border); 
+            padding: 8px 14px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            text-decoration: none; 
+            font-size: 0.9rem; 
+            transition: background 0.2s; 
+        }
+
+        .btn-back:hover { 
+            background: #2d3748; 
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #273549;
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-purple);
+            color: #ffffff;
+            border-color: var(--accent-purple);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            min-height: 250px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .filter-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-box p {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .dropdown {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .dropdown-btn {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 108%;
+            left: 0; right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 0;
+            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .dropdown-content.show { display: block; }
+
+        .dropdown-content label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .dropdown-content label:hover {
+            background: rgba(139, 92, 246, 0.12);
+            color: var(--text-main);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            min-height: 90px;
+        }
+
+        .item-card:hover {
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.82);
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            backdrop-filter: blur(4px);
+            padding: 15px;
+        }
+
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 25px;
+            max-width: 550px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-box h2 { font-size: 1.25rem; color: var(--text-main); margin-bottom: 12px; }
+        .modal-box p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px; }
+
+        .modal-note {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--accent);
+            padding: 12px 15px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .btn-start-main {
+            width: 100%;
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .days-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .day-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        .session-runner {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: var(--bg-main);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 25px;
+        }
+
+        .session-runner.active { 
+            display: block; 
+        }
+
+        .session-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .session-header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .session-subtitle {
+            font-size: 0.85rem;
+            color: var(--accent-purple);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .instruction-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .timer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .countdown-badge {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-orange);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(245, 158, 11, 0.1);
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .countdown-time {
+            font-size: 1.5rem;
+            color: #ffffff;
+            font-family: monospace;
+        }
+
+        .timer-info { font-size: 0.8rem; color: var(--text-muted); }
+
+        .btn-timer-toggle {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .action-buttons-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-action-done {
+            background: var(--accent-green);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .btn-action-skip {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .feedback-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .feedback-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        .feedback-btn.selected {
+            border-color: var(--accent-purple);
+            background: rgba(139, 92, 246, 0.15);
+        }
+
+        .pain-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .chip-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .chip-btn.selected {
+            background: var(--accent-red);
+            color: white;
+            border-color: var(--accent-red);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-green);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .input-custom {
+            width: 100%;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        .error-message {
+            color: var(--accent-red);
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .timer-result-badge {
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid var(--accent);
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.88rem;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .pause-stats-badge {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid var(--accent-orange);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #fde68a;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📊 Tests et Évaluations</h1>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-back" style="border-color: var(--accent-orange); color: var(--accent-orange);" onclick="openAdminModal()">🛠️ Admin LocalStorage</button>
+            <button class="btn-back" onclick="window.location.href='dashboard.html'">🏠 Retour à l'accueil</button>
+        </div>
+    </header>
+
+    <div id="mainView">
+        <div class="tabs-container">
+            <button id="btn-tab-tests" class="tab-btn active" onclick="switchTab('tests')">🧪 Tests</button>
+            <button id="btn-tab-evaluations" class="tab-btn" onclick="switchTab('evaluations')">📝 Évaluations</button>
+        </div>
+
+        <div id="content-tests" class="tab-content active">
+            <div class="filter-box">
+                <p>🔍 Filtrer les tests par tags :</p>
+                <div class="dropdown">
+                    <button class="dropdown-btn" onclick="toggleDropdown('dropdownContentTests')">
+                        <span id="dropdownLabelTests">Tous les tests</span>
+                        <span>▼</span>
+                    </button>
+                    <div id="dropdownContentTests" class="dropdown-content">
+                        <label><input type="checkbox" value="commencer_muscu" onchange="updateTestsFilters()"> À effectuer en commençant la musculation</label>
+                        <label><input type="checkbox" value="reprise_muscu" onchange="updateTestsFilters()"> À effectuer lors d'une reprise de la muscu après une longue pause</label>
+                    </div>
+                </div>
+            </div>
+            <div class="cards-grid" id="gridTests"></div>
+        </div>
+
+        <div id="content-evaluations" class="tab-content">
+            <div class="filter-box">
+                <p>🔍 Filtrer les évaluations par tags :</p>
+                <div class="dropdown">
+                    <button class="dropdown-btn" onclick="toggleDropdown('dropdownContentEvals')">
+                        <span id="dropdownLabelEvals">Toutes les évaluations</span>
+                        <span>▼</span>
+                    </button>
+                    <div id="dropdownContentEvals" class="dropdown-content">
+                        <label><input type="checkbox" value="suivi_mensuel" onchange="updateEvalsFilters()"> Évaluations mensuelles</label>
+                        <label><input type="checkbox" value="force_max" onchange="updateEvalsFilters()"> Test de Force Maximale</label>
+                    </div>
+                </div>
+            </div>
+            <div class="cards-grid" id="gridEvaluations"></div>
+        </div>
+    </div>
+
+    <div id="sessionRunner" class="session-runner">
+        <div class="session-container" id="sessionContent"></div>
+    </div>
+
+    <div id="modalItem" class="modal-overlay">
+        <div class="modal-box" id="modalBoxContent"></div>
+    </div>
+
+    <div id="modalFeedback" class="modal-overlay">
+        <div class="modal-box">
+            <h2>Évaluation de l'exercice</h2>
+            
+            <div class="timer-result-badge">
+                <div>⏱️ Temps d'exécution mesuré : <strong id="timerResultDisplay" style="color:var(--accent-green);">0 sec</strong></div>
+            </div>
+
+            <div class="pause-stats-badge" id="pauseStatsDisplay"></div>
+
+            <p>Comment avez-vous ressenti cet exercice ?</p>
+            <div class="feedback-options">
+                <button class="feedback-btn" onclick="selectDifficulty('Très facile', this)">🟢 Très facile</button>
+                <button class="feedback-btn" onclick="selectDifficulty('Facile', this)">🟢 Facile</button>
+                <button class="feedback-btn" onclick="selectDifficulty('Adapté', this)">🔵 Adapté</button>
+                <button class="feedback-btn" onclick="selectDifficulty('Difficile', this)">🟠 Difficile</button>
+                <button class="feedback-btn" onclick="selectDifficulty('Très difficile', this)">🔴 Très difficile</button>
+                <button class="feedback-btn" onclick="selectDifficulty('Impossible', this)">⚫ Impossible</button>
+            </div>
+
+            <div id="repsCompletedContainer" style="display:none; margin-bottom:15px;">
+                <label style="font-size:0.85rem; color:var(--text-muted);">Combien de répétitions avez-vous réussi à effectuer ?</label>
+                <input type="number" id="inputRepsCount" class="input-custom" placeholder="Ex: 6" min="0">
+            </div>
+
+            <div style="border-top:1px solid var(--border); padding-top:15px; margin-top:15px;">
+                <label style="font-size:0.9rem; font-weight:600;">Avez-vous ressenti une douleur ou une gêne ?</label>
+                <div style="margin-top:8px; display:flex; gap:15px;">
+                    <label style="font-size:0.85rem; cursor:pointer;"><input type="radio" name="painToggle" value="non" checked onchange="togglePainZones(false)"> Non</label>
+                    <label style="font-size:0.85rem; cursor:pointer;"><input type="radio" name="painToggle" value="oui" onchange="togglePainZones(true)"> Oui</label>
+                </div>
+
+                <div id="painZonesContainer" style="display:none; margin-top:10px;">
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:5px;">Précisez la zone :</p>
+                    <div class="pain-chips">
+                        <button class="chip-btn" onclick="togglePainChip(this, 'Épaule')">Épaule</button>
+                        <button class="chip-btn" onclick="togglePainChip(this, 'Coude')">Coude</button>
+                        <button class="chip-btn" onclick="togglePainChip(this, 'Poignet')">Poignet</button>
+                        <button class="chip-btn" onclick="togglePainChip(this, 'Dos')">Dos</button>
+                        <button class="chip-btn" onclick="togglePainChip(this, 'Autre')">Autre</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="feedbackError" class="error-message"></div>
+
+            <button class="btn-start-main" style="margin-top:20px; margin-bottom:0;" onclick="submitFeedback()">Valider et passer à l'exercice suivant</button>
+        </div>
+    </div>
+
+    <div id="modalSkipReason" class="modal-overlay">
+        <div class="modal-box">
+            <h2>Motif du saut d'exercice</h2>
+            <p>Pour quelles raisons ne souhaitez-vous pas faire cet exercice ?</p>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:15px;">
+                <label style="font-size:0.85rem; cursor:pointer;"><input type="radio" name="skipReason" value="Je ne sais pas effectuer cet exercice" onchange="handleSkipReasonChange(this)"> 🚫 Je ne sais pas effectuer cet exercice</label>
+                <label style="font-size:0.85rem; cursor:pointer;"><input type="radio" name="skipReason" value="J'ai une douleur ou une blessure" onchange="handleSkipReasonChange(this)"> 🤕 J'ai une douleur ou une blessure</label>
+                <label style="font-size:0.85rem; cursor:pointer;"><input type="radio" name="skipReason" value="Je n'ai pas l'espace ou le matériel nécessaire" onchange="handleSkipReasonChange(this)"> 🏠 Je n'ai pas l'espace ou le matériel nécessaire</label>
+                <label style="font-size:0.85rem; cursor:pointer;"><input type="radio" name="skipReason" value="La variante est trop difficile" onchange="handleSkipReasonChange(this)"> ⚠️ La variante est trop difficile</label>
+                <label style="font-size:0.85rem; cursor:pointer;"><input type="radio" name="skipReason" value="Je manque de temps" onchange="handleSkipReasonChange(this)"> ⏰ Je manque de temps</label>
+                <label style="font-size:0.85rem; cursor:pointer;"><input type="radio" name="skipReason" value="Autre" onchange="handleSkipReasonChange(this)"> ✍️ Autre...</label>
+            </div>
+
+            <div id="skipOtherContainer" style="display:none; margin-bottom:15px;">
+                <input type="text" id="inputSkipOther" class="input-custom" placeholder="Précisez votre motif...">
+            </div>
+
+            <div id="skipError" class="error-message"></div>
+
+            <button class="btn-start-main" style="margin-bottom:0; margin-top:15px;" onclick="confirmSkipExercise()">Enregistrer et continuer</button>
+        </div>
+    </div>
+
+<script type="module">
+    import { auth, db } from './firebase-config.js';
+    import { doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    // Application du thème au démarrage
+    try {
+        const answers = JSON.parse(localStorage.getItem('userAnswers') || '{}');
+        if (answers.currentTheme === 'light') {
+            document.body.classList.add('theme-light');
+        }
+    } catch(e) {
+        console.error("Erreur lecture thème :", e);
+    }
+
+    const testNiveauSingleDay = {
+        title: "Test de Niveau global",
+        sessionName: "Évaluation globale",
+        exercises: [
+            {
+                name: "Pompes classiques",
+                category: "Poussée & Stabilité",
+                target: "10 répétitions",
+                targetReps: 10,
+                instruction: "Mains ancrées au sol, écartées à peine plus large que les épaules. Gardez un alignement strict à 180° de la tête aux talons (abdominaux verrouillés). Lors de la descente, orientez vos coudes vers l'arrière selon un angle de 45° par rapport au buste. Descendez jusqu'à obtenir une flexion du coude à 90°, puis repoussez jusqu'à l'extension complète.",
+                durationTarget: null
+            },
+            {
+                name: "Planche sur les coudes",
+                category: "Poussée & Stabilité",
+                target: "45 secondes",
+                targetReps: null,
+                instruction: "Prenez appui sur les avant-bras avec un angle de 90° au niveau du coude, placé exactement sous l'épaule. Maintenez le corps sur une ligne droite parfaite (180°). Effectuez une légère rétroversion du bassin pour éviter que le bas du dos ne se creuse.",
+                durationTarget: 45
+            },
+            {
+                name: "Tirage horizontal (sous table ou avec élastique)",
+                category: "Tirage & Posture",
+                target: "8 répétitions",
+                targetReps: 8,
+                instruction: "Positionnez-vous sous le rebord d'une table solide, mains en prise pronation écartées de la largeur des épaules. Maintenez le corps totalement gainé à 180°. Tirez le buste vers le haut jusqu'à ce que les coudes dépassent la ligne du corps. Marquez une pause d'une seconde en resserrant les omoplates avant de redescendre.",
+                durationTarget: null
+            },
+            {
+                name: "Extension lombaire au sol (Superman)",
+                category: "Tirage & Posture",
+                target: "10 répétitions (pause 2 sec)",
+                targetReps: 10,
+                instruction: "Allongé à plat ventre, bras tendus devant vous dans le prolongement du corps. Décollez simultanément le buste et les cuisses d'environ 15 à 20° au-dessus du sol en contractant les fessiers et les spinaux. Maintenez la position haute pendant 2 secondes pleines. Le regard reste fixé vers le sol.",
+                durationTarget: null
+            },
+            {
+                name: "Squat bulgare",
+                category: "Ancrage & Bas du corps",
+                target: "8 répétitions par jambe",
+                targetReps: 8,
+                instruction: "Posez le coup de pied arrière sur un support (chaise ou lit) situé à environ 40 cm du sol. Avancez le pied avant de façon à former un angle de 90° au niveau du genou lorsque vous êtes en bas du mouvement. Descendez verticalement jusqu'à ce que le genou arrière frôle le sol, puis poussez fort dans le talon avant.",
+                durationTarget: null
+            },
+            {
+                name: "Équilibre sur une jambe",
+                category: "Ancrage & Bas du corps",
+                target: "30 secondes par jambe",
+                targetReps: null,
+                instruction: "Décollez un pied du sol en fléchissant le genou libre à 90°. Sur la jambe d'appui, conservez le genou très légèrement déverrouillé pour engager les muscles stabilisateurs de la cheville. Gardez le bassin parfaitement horizontal et le buste vertical.",
+                durationTarget: 30
+            },
+            {
+                name: "Mountain Climbers",
+                category: "Dynamisme & Cardio",
+                target: "35 secondes",
+                targetReps: null,
+                instruction: "En position initiale de pompe, bras verrouillés perpendiculairement au sol. Ramenez dynamiquement un genou vers la poitrine jusqu'à former un angle de 90° sous le buste, tandis que l'autre jambe reste tendue. Enchaînez le mouvement de manière fluide et alternée en conservant le bassin stable.",
+                durationTarget: 35
+            },
+            {
+                name: "Squat dynamique",
+                category: "Dynamisme & Cardio",
+                target: "12 répétitions",
+                targetReps: 12,
+                instruction: "Écartez les pieds de la largeur des épaules, pointes ouvertes vers l'extérieur à environ 15°. Initiez le mouvement par une cassure des hanches vers l'arrière, puis fléchissez les genoux jusqu'à ce que le pli de la hanche passe sous le sommet du genou. Veillez à ce que les genoux restent alignés avec la pointe des pieds.",
+                durationTarget: null
+            },
+            {
+                name: "Flexion avant du buste (Souplesse)",
+                category: "Mobilité & Souplesse",
+                target: "15 secondes de maintien",
+                targetReps: null,
+                instruction: "Debout, pieds joints, jambes tendues sans blocage hyper-extensif. Effectuez une bascule du bassin vers l'avant et laissez descendre le buste et les bras vers le sol de manière passive. Ne donnez aucun à-coup.",
+                durationTarget: 15
+            },
+            {
+                name: "Rotation des épaules (avec serviette ou bâton)",
+                category: "Mobilité & Souplesse",
+                target: "8 répétitions",
+                targetReps: 8,
+                instruction: "Saisissez une serviette ou un bâton avec une prise large. En conservant les coudes totalement verrouillés à 180°, faites passer le bâton au-dessus de la tête en traçant un arc de cercle complet (de la ligne des hanches devant jusqu'au bas du dos derrière).",
+                durationTarget: null
+            }
+        ]
+    };
+
+    const testMobiliteSingleDay = {
+        title: "Test de Mobilité & Souplesse",
+        sessionName: "Bilan Mobilité Initial",
+        exercises: [
+            {
+                name: "Flexion avant assise (Chaîne postérieure)",
+                category: "Mobilité & Souplesse",
+                target: "Noter le point atteint (orteils, chevilles...)",
+                targetReps: null,
+                instruction: "Assis au sol, jambes tendues devant vous. Penchez le buste vers l'avant en expirant, sans tirer avec les bras ni forcer. Notez le point atteint naturellement par le bout de vos doigts (genoux, tibias, chevilles, orteils) et le niveau de tension ressenti de 1 à 10.",
+                durationTarget: 20
+            },
+            {
+                name: "Fermeture du bassin au mur (Prépa charrue)",
+                category: "Mobilité & Souplesse",
+                target: "Écart cuisses-torse (en poings)",
+                targetReps: null,
+                instruction: "Allongé sur le dos, fesses proches du mur, jambes relevées. Relâchez les jambes vers votre buste en gardant la nuque à plat au sol et les épaules ancrées. Notez l'espace restant entre vos cuisses et votre torse (en largeur de poings : 2 poings, 1 poing, contact).",
+                durationTarget: 30
+            },
+            {
+                name: "Fente basse avec rétroversion (Psoas & Hanche)",
+                category: "Mobilité & Souplesse",
+                target: "Amplitude de bascule du bassin",
+                targetReps: null,
+                instruction: "En position de fente, un genou au sol. Engagez une rétroversion du bassin (fesse arrière contractée) sans bouger le buste vers l'avant. Notez l'amplitude de bascule disponible avant que la tension n'apparaisse sur l'avant de la cuisse.",
+                durationTarget: 30
+            }
+        ]
+    };
+
+    const testsList = [
+        { id: "test-niveau", title: "Test de niveau", tags: ["commencer_muscu", "reprise_muscu"] },
+        { id: "test-mobilite", title: "Test de Mobilité & Souplesse", tags: ["commencer_muscu", "suivi_mensuel"] }
+    ];
+
+    const evalsList = [
+        { id: "eval-1rm", title: "Évaluation Force Maximale", tags: ["force_max"] },
+        { id: "eval-mensuelle", title: "Bilan mensuel de progression", tags: ["suivi_mensuel"] }
+    ];
+
+    let activeTestTags = new Set();
+    let activeEvalTags = new Set();
+
+    let currentActiveTest = testNiveauSingleDay;
+    let currentExIndex = 0;
+    let timerInterval = null;
+    
+    let timerSeconds = 0;
+    let targetTimeSeconds = null;
+    let countdownSeconds = null;
+    let isTimerPaused = false;
+    
+    let pauseCount = 0;
+    let pauseDurations = [];
+    let pauseStartTimestamp = null;
+
+    let selectedDifficulty = "";
+    let selectedPainZones = [];
+
+    let activeSessionRecord = {
+        sessionTitle: "",
+        date: "",
+        exercises: []
+    };
+
+    function getTestState(key = 'test_niveau_single_state') {
+        return JSON.parse(localStorage.getItem(key)) || {
+            lastCompletedDate: null
+        };
+    }
+
+    function saveTestState(key, state) {
+        localStorage.setItem(key, JSON.stringify(state));
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+        if (tab === 'tests') {
+            document.getElementById('content-tests').classList.add('active');
+            document.getElementById('btn-tab-tests').classList.add('active');
+        } else {
+            document.getElementById('content-evaluations').classList.add('active');
+            document.getElementById('btn-tab-evaluations').classList.add('active');
+        }
+    }
+
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        const isOpen = dropdown.classList.contains('show');
+        document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
+        if (!isOpen) dropdown.classList.add('show');
+    }
+
+    function updateTestsFilters() {
+        const checkboxes = document.querySelectorAll('#dropdownContentTests input[type="checkbox"]:checked');
+        activeTestTags = new Set(Array.from(checkboxes).map(cb => cb.value));
+        document.getElementById('dropdownLabelTests').innerText = activeTestTags.size === 0 ? "Tous les tests" : `${activeTestTags.size} tag(s) sélectionné(s)`;
+        renderTests();
+    }
+
+    function updateEvalsFilters() {
+        const checkboxes = document.querySelectorAll('#dropdownContentEvals input[type="checkbox"]:checked');
+        activeEvalTags = new Set(Array.from(checkboxes).map(cb => cb.value));
+        document.getElementById('dropdownLabelEvals').innerText = activeEvalTags.size === 0 ? "Toutes les évaluations" : `${activeEvalTags.size} tag(s) sélectionné(s)`;
+        renderEvals();
+    }
+
+    function renderTests() {
+        const container = document.getElementById("gridTests");
+        const filtered = testsList.filter(item => activeTestTags.size === 0 || Array.from(activeTestTags).some(t => item.tags.includes(t)));
+        container.innerHTML = filtered.map(item => `
+            <div class="item-card" onclick="openModal('tests', '${item.id}')">
+                <h3>${item.title}</h3>
+            </div>
+        `).join("");
+    }
+
+    function renderEvals() {
+        const container = document.getElementById("gridEvaluations");
+        const filtered = evalsList.filter(item => activeEvalTags.size === 0 || Array.from(activeEvalTags).some(t => item.tags.includes(t)));
+        container.innerHTML = filtered.map(item => `
+            <div class="item-card" onclick="openModal('evals', '${item.id}')">
+                <h3>${item.title}</h3>
+            </div>
+        `).join("");
+    }
+
+    function openModal(type, id) {
+        const box = document.getElementById('modalBoxContent');
+        if (type === 'tests' && id === 'test-niveau') {
+            currentActiveTest = testNiveauSingleDay;
+            const state = getTestState('test_niveau_single_state');
+
+            let completionBadge = "";
+            if (state.lastCompletedDate) {
+                completionBadge = `
+                    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-green); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; color: #a7f3d0;">
+                        🏆 <strong>Test entièrement terminé !</strong><br>Dernière réalisation globale : ${state.lastCompletedDate}
+                    </div>
+                `;
+            }
+
+            box.innerHTML = `
+                <h2>Test de niveau (1 Jour)</h2>
+                ${completionBadge}
+                <p>Bienvenue dans votre test de niveau. Cette évaluation globale regroupe tous les tests physiques en une seule séance de 10 exercices afin d'évaluer directement vos capacités et ajuster votre programme.</p>
+                
+                <div class="modal-note">
+                    <strong>Note importante :</strong> Assurez-vous d'avoir de l'espace autour de vous et prévoyez une quinzaine de minutes pour réaliser l'ensemble de la séance d'une seule traite.
+                </div>
+
+                <button class="btn-start-main" onclick="startSingleDaySession()">Démarrer le test complet</button>
+
+                <div style="font-weight:600; font-size:0.95rem; margin-bottom:12px;">Liste des 10 exercices :</div>
+                <div class="days-grid">
+                    ${testNiveauSingleDay.exercises.map((ex, index) => `
+                        <div class="day-btn">
+                            <div>
+                                <div style="font-weight:600; font-size:0.9rem;">${index + 1}. ${ex.name}</div>
+                                <div style="font-size:0.85rem; color:var(--text-muted);">${ex.category} • Objectif : ${ex.target}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button class="btn-action-skip" style="width:100%;" onclick="closeModal()">Fermer</button>
+            `;
+        } else if (type === 'tests' && id === 'test-mobilite') {
+            currentActiveTest = testMobiliteSingleDay;
+            const state = getTestState('test_mobilite_state');
+
+            let completionBadge = "";
+            if (state.lastCompletedDate) {
+                completionBadge = `
+                    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-green); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; color: #a7f3d0;">
+                        🏆 <strong>Bilan réalisé !</strong><br>Dernière évaluation : ${state.lastCompletedDate}
+                    </div>
+                `;
+            }
+
+            box.innerHTML = `
+                <h2>Test de Mobilité & Souplesse</h2>
+                ${completionBadge}
+                <p>Ce bilan initial de 3 exercices permet d'évaluer la chaîne postérieure, l'extensibilité des hanches et la fermeture du bassin avant le début de votre bloc de progression.</p>
+                
+                <div class="modal-note">
+                    <strong>Conseil :</strong> Ne forcez jamais dans la douleur. Notez vos repères d'amplitude naturels en fin d'expiration.
+                </div>
+
+                <button class="btn-start-main" onclick="startSingleDaySession()">Démarrer le bilan de mobilité</button>
+
+                <div style="font-weight:600; font-size:0.95rem; margin-bottom:12px;">Liste des 3 tests :</div>
+                <div class="days-grid">
+                    ${testMobiliteSingleDay.exercises.map((ex, index) => `
+                        <div class="day-btn">
+                            <div>
+                                <div style="font-weight:600; font-size:0.9rem;">${index + 1}. ${ex.name}</div>
+                                <div style="font-size:0.85rem; color:var(--text-muted);">${ex.category} • Objectif : ${ex.target}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button class="btn-action-skip" style="width:100%;" onclick="closeModal()">Fermer</button>
+            `;
+        } else if (type === 'evals' && id === 'eval-1rm') {
+            box.innerHTML = `
+                <h2>Évaluation Force Maximale (1RM)</h2>
+                <p>Mesurez votre charge maximale sur une répétition pour étalonner précisément vos pourcentages d'entraînement.</p>
+                <div class="modal-note">
+                    <strong>Sécurité :</strong> Échauffez-vous méthodiquement et assurez-vous d'être assisté par un pareur pour les mouvements lourds.
+                </div>
+                <button class="btn-start-main" onclick="alert('L\'évaluation Force Maximale sera disponible au prochain cycle.'); closeModal();">Démarrer le test 1RM</button>
+                <button class="btn-action-skip" style="width:100%;" onclick="closeModal()">Fermer</button>
+            `;
+        } else if (type === 'evals' && id === 'eval-mensuelle') {
+            box.innerHTML = `
+                <h2>Bilan mensuel de progression</h2>
+                <p>Enregistrez vos mensurations, votre composition corporelle et vos ressentis généraux pour évaluer vos progrès globaux.</p>
+                <div class="modal-note">
+                    <strong>Recommandation :</strong> Réalisez ces mesures le matin à jeun dans des conditions similaires.
+                </div>
+                <button class="btn-start-main" onclick="alert('Module de bilan mensuel ouvert.'); closeModal();">Commencer le bilan</button>
+                <button class="btn-action-skip" style="width:100%;" onclick="closeModal()">Fermer</button>
+            `;
+        } else {
+            box.innerHTML = `
+                <h2>Évaluation</h2>
+                <p>Détails du module d'évaluation sélectionnés.</p>
+                <button class="btn-action-skip" style="width:100%; margin-top:15px;" onclick="closeModal()">Fermer</button>
+            `;
+        }
+        document.getElementById('modalItem').style.display = 'flex';
+    }
+
+    function openAdminModal() {
+        const keys = ['test_results', 'test_mobilite_results', 'admin_test_records'];
+        const foundKey = keys.find(k => localStorage.getItem(k) !== null);
+
+        if (!foundKey) {
+            const box = document.getElementById('modalBoxContent');
+            box.innerHTML = `
+                <h2>🛠️ Administration - LocalStorage</h2>
+                <p>Aucune donnée de résultat n'est actuellement enregistrée dans le LocalStorage.</p>
+                <button class="btn-action-skip" style="width:100%; margin-top:15px;" onclick="closeModal()">Fermer</button>
+            `;
+            document.getElementById('modalItem').style.display = 'flex';
+            return;
+        }
+
+        loadAdminKeyData(foundKey);
+    }
+
+    function loadAdminKeyData(storageKey) {
+        const rawData = localStorage.getItem(storageKey);
+        const box = document.getElementById('modalBoxContent');
+
+        if (!rawData) return;
+
+        let parsedData = JSON.parse(rawData);
+        let isArray = Array.isArray(parsedData);
+        let sessionData = isArray ? parsedData[parsedData.length - 1] : parsedData;
+
+        if (!sessionData || !sessionData.exercises) {
+            box.innerHTML = `
+                <h2>🛠️ Administration - LocalStorage</h2>
+                <p>Les données de la clé <strong>${storageKey}</strong> ne contiennent pas d'exercices exploitables.</p>
+                <button class="btn-action-skip" style="width:100%; margin-top:15px;" onclick="closeModal()">Fermer</button>
+            `;
+            document.getElementById('modalItem').style.display = 'flex';
+            return;
+        }
+
+        let html = `
+            <h2>🛠️ Modifier les résultats</h2>
+            
+            <div style="margin-bottom:15px;">
+                <label style="font-size:0.85rem; font-weight:600;">Clé LocalStorage sélectionnée :</label>
+                <select id="adminKeySelect" class="input-custom" onchange="loadAdminKeyData(this.value)">
+                    <option value="test_results" ${storageKey === 'test_results' ? 'selected' : ''}>Dernier test de niveau (test_results)</option>
+                    <option value="test_mobilite_results" ${storageKey === 'test_mobilite_results' ? 'selected' : ''}>Dernier bilan mobilité (test_mobilite_results)</option>
+                    <option value="admin_test_records" ${storageKey === 'admin_test_records' ? 'selected' : ''}>Historique cumulé (admin_test_records)</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom:12px;">
+                <label style="font-size:0.85rem; font-weight:600;">Nom du test :</label>
+                <input type="text" id="adminSessionTitle" class="input-custom" value="${sessionData.sessionTitle || ''}">
+            </div>
+            <div style="margin-bottom:15px;">
+                <label style="font-size:0.85rem; font-weight:600;">Date de réalisation :</label>
+                <input type="text" id="adminSessionDate" class="input-custom" value="${sessionData.date || ''}">
+            </div>
+
+            <h3 style="font-size:0.95rem; margin:15px 0 10px; border-bottom:1px solid var(--border); padding-bottom:5px;">Exercices enregistrés</h3>
+        `;
+
+        sessionData.exercises.forEach((ex, idx) => {
+            html += `
+                <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; padding:12px; margin-bottom:12px;">
+                    <div style="font-weight:700; color:var(--accent-purple); margin-bottom:8px;">${idx + 1}. ${ex.exerciseName}</div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-muted);">Statut :</label>
+                            <select id="adminExStatus_${idx}" class="input-custom" style="padding:6px;">
+                                <option value="completed" ${ex.status === 'completed' ? 'selected' : ''}>Terminé</option>
+                                <option value="skipped" ${ex.status === 'skipped' ? 'selected' : ''}>Ignoré / Passé</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-muted);">Durée (secondes) :</label>
+                            <input type="number" id="adminExDuration_${idx}" class="input-custom" style="padding:6px;" value="${ex.durationSeconds || 0}">
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-muted);">Difficulté ressentie :</label>
+                            <input type="text" id="adminExDiff_${idx}" class="input-custom" style="padding:6px;" value="${ex.difficulty || ''}" placeholder="Ex: Adapté">
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-muted);">Répétitions :</label>
+                            <input type="number" id="adminExReps_${idx}" class="input-custom" style="padding:6px;" value="${ex.repsCompleted !== null && ex.repsCompleted !== undefined ? ex.repsCompleted : ''}" placeholder="Ex: 8">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:0.8rem; color:var(--text-muted);">Motif si ignoré :</label>
+                        <input type="text" id="adminExSkip_${idx}" class="input-custom" style="padding:6px;" value="${ex.skipReason || ''}">
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `
+            <button class="btn-start-main" style="margin-top:15px;" onclick="saveAdminData('${storageKey}')">💾 Enregistrer les modifications</button>
+            <button class="btn-action-skip" style="width:100%; margin-top:8px;" onclick="closeModal()">Annuler</button>
+        `;
+
+        box.innerHTML = html;
+        document.getElementById('modalItem').style.display = 'flex';
+    }
+
+    function saveAdminData(storageKey) {
+        const rawData = localStorage.getItem(storageKey);
+        if (!rawData) return;
+
+        let parsedData = JSON.parse(rawData);
+        let isArray = Array.isArray(parsedData);
+        let sessionData = isArray ? parsedData[parsedData.length - 1] : parsedData;
+
+        sessionData.sessionTitle = document.getElementById('adminSessionTitle').value;
+        sessionData.date = document.getElementById('adminSessionDate').value;
+
+        sessionData.exercises.forEach((ex, idx) => {
+            ex.status = document.getElementById(`adminExStatus_${idx}`).value;
+            ex.durationSeconds = parseInt(document.getElementById(`adminExDuration_${idx}`).value, 10) || 0;
+            ex.difficulty = document.getElementById(`adminExDiff_${idx}`).value;
+
+            const repsVal = document.getElementById(`adminExReps_${idx}`).value;
+            ex.repsCompleted = repsVal !== "" ? parseInt(repsVal, 10) : null;
+
+            ex.skipReason = document.getElementById(`adminExSkip_${idx}`).value || null;
+        });
+
+        if (isArray) {
+            parsedData[parsedData.length - 1] = sessionData;
+            localStorage.setItem(storageKey, JSON.stringify(parsedData));
+        } else {
+            localStorage.setItem(storageKey, JSON.stringify(sessionData));
+        }
+
+        alert(`✅ Modifications enregistrées avec succès dans '${storageKey}' !`);
+        closeModal();
+    }
+
+    function startSingleDaySession() {
+        closeModal();
+        currentExIndex = 0;
+
+        activeSessionRecord = {
+            sessionTitle: currentActiveTest.title,
+            date: new Date().toISOString(),
+            exercises: []
+        };
+
+        document.getElementById('sessionRunner').classList.add('active');
+        renderSessionIntro();
+    }
+
+    function renderSessionIntro() {
+        const container = document.getElementById('sessionContent');
+
+        container.innerHTML = `
+            <div class="session-header">
+                <h2>${currentActiveTest.title}</h2>
+                <div class="session-subtitle">${currentActiveTest.sessionName} • ${currentActiveTest.exercises.length} exercices</div>
+            </div>
+            <div class="instruction-card">
+                "Exécutez chaque test avec précision et sans forcer au-delà du relâchement respiratoire. Notez vos ressentis à chaque étape."
+            </div>
+            <button class="btn-start-main" style="margin-bottom:0;" onclick="loadExercise(0)">Commencer l'exercice 1</button>
+        `;
+    }
+
+    function loadExercise(index) {
+        currentExIndex = index;
+        const currentEx = currentActiveTest.exercises[index];
+        const total = currentActiveTest.exercises.length;
+
+        initTimerForExercise(currentEx.durationTarget);
+
+        const container = document.getElementById('sessionContent');
+
+        let timerUI = '';
+        if (currentEx.durationTarget) {
+            timerUI = `
+                <div class="timer-box">
+                    <div class="timer-row">
+                        <div class="countdown-badge">
+                            ⏳ Temps restant : <span class="countdown-time" id="countdownDisplay">${currentEx.durationTarget}s</span>
+                        </div>
+                        <button class="btn-timer-toggle" id="btnTimerToggle" onclick="toggleTimer()">⏸️ Pause</button>
+                    </div>
+                    <span class="timer-info">⏱️ Le compte à rebours décompte automatiquement.</span>
+                </div>
+            `;
+        } else {
+            timerUI = `
+                <div class="timer-box">
+                    <div class="timer-row">
+                        <span class="timer-info">⏱️ Un chronomètre mesure la durée d'exécution.</span>
+                        <button class="btn-timer-toggle" id="btnTimerToggle" onclick="toggleTimer()">⏸️ Pause</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = `
+            <div class="session-header">
+                <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; margin-bottom:4px;">${currentEx.category} • Exercice ${index + 1} sur ${total}</div>
+                <h2>${currentEx.name}</h2>
+                <div class="session-subtitle" style="color:var(--accent-green);">Objectif : ${currentEx.target}</div>
+            </div>
+
+            <div class="instruction-card">
+                "${currentEx.instruction}"
+            </div>
+
+            ${timerUI}
+
+            <div class="action-buttons-group">
+                <button class="btn-action-done" onclick="openFeedbackModal()">C'est fait !</button>
+                <button class="btn-action-skip" onclick="openSkipModal()">Passer cet exercice</button>
+            </div>
+        `;
+    }
+
+    function initTimerForExercise(targetSeconds = null) {
+        clearInterval(timerInterval);
+        timerSeconds = 0;
+        targetTimeSeconds = targetSeconds;
+        countdownSeconds = targetSeconds;
+        isTimerPaused = false;
+        
+        pauseCount = 0;
+        pauseDurations = [];
+        pauseStartTimestamp = null;
+
+        timerInterval = setInterval(() => {
+            if (!isTimerPaused) {
+                timerSeconds++;
+
+                if (countdownSeconds !== null && countdownSeconds > 0) {
+                    countdownSeconds--;
+                    updateCountdownUI();
+
+                    if (countdownSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        openFeedbackModal();
+                    }
+                }
+            }
+        }, 1000);
+    }
+
+    function updateCountdownUI() {
+        const el = document.getElementById('countdownDisplay');
+        if (el && countdownSeconds !== null) {
+            const mins = Math.floor(countdownSeconds / 60);
+            const secs = countdownSeconds % 60;
+            const formatted = mins > 0 ? `${mins}:${secs < 10 ? '0' : ''}${secs}` : `${secs}s`;
+            el.innerText = formatted;
+        }
+    }
+
+    function toggleTimer() {
+        const btn = document.getElementById('btnTimerToggle');
+        if (isTimerPaused) {
+            if (pauseStartTimestamp) {
+                const elapsedPauseSec = Math.max(1, Math.round((Date.now() - pauseStartTimestamp) / 1000));
+                pauseDurations.push(elapsedPauseSec);
+            }
+            pauseStartTimestamp = null;
+            isTimerPaused = false;
+            if (btn) btn.innerText = "⏸️ Pause";
+        } else {
+            pauseCount++;
+            pauseStartTimestamp = Date.now();
+            isTimerPaused = true;
+            if (btn) btn.innerText = "▶️ Reprendre";
+        }
+    }
+
+    function openFeedbackModal() {
+        clearInterval(timerInterval);
+
+        if (isTimerPaused && pauseStartTimestamp) {
+            const elapsedPauseSec = Math.max(1, Math.round((Date.now() - pauseStartTimestamp) / 1000));
+            pauseDurations.push(elapsedPauseSec);
+            pauseStartTimestamp = null;
+        }
+
+        const mins = Math.floor(timerSeconds / 60);
+        const secs = timerSeconds % 60;
+        const timeFormatted = mins > 0 ? `${mins} min ${secs} sec` : `${secs} sec`;
+        document.getElementById('timerResultDisplay').innerText = timeFormatted;
+
+        const pauseStatsBox = document.getElementById('pauseStatsDisplay');
+        if (pauseCount === 0) {
+            pauseStatsBox.innerHTML = `⏸️ <strong>Pauses :</strong> Aucune pause durant l'effort`;
+        } else {
+            const totalPauseSecs = pauseDurations.reduce((a, b) => a + b, 0);
+            const pauseDetailsList = pauseDurations.map((dur, i) => `Pause ${i + 1} : ${dur}s`).join(', ');
+            pauseStatsBox.innerHTML = `
+                <div>⏸️ <strong>Nombre de pause(s) :</strong> ${pauseCount} (Durée cumulée : ${totalPauseSecs}s)</div>
+                <div style="font-size:0.78rem; color:#cbd5e1; margin-top:3px;">Détails : ${pauseDetailsList}</div>
+            `;
+        }
+
+        selectedDifficulty = "";
+        selectedPainZones = [];
+        document.getElementById('feedbackError').style.display = 'none';
+        document.querySelectorAll('.feedback-btn').forEach(b => b.classList.remove('selected'));
+        document.getElementById('repsCompletedContainer').style.display = 'none';
+        document.getElementById('inputRepsCount').value = "";
+        document.getElementById('painZonesContainer').style.display = 'none';
+        document.querySelectorAll('input[name="painToggle"]')[0].checked = true;
+        document.querySelectorAll('.chip-btn').forEach(c => c.classList.remove('selected'));
+        document.getElementById('modalFeedback').style.display = 'flex';
+    }
+
+    function selectDifficulty(diff, btn) {
+        selectedDifficulty = diff;
+        document.querySelectorAll('.feedback-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+
+        const repsBox = document.getElementById('repsCompletedContainer');
+        repsBox.style.display = (diff === 'Impossible') ? 'block' : 'none';
+    }
+
+    function togglePainZones(show) {
+        document.getElementById('painZonesContainer').style.display = show ? 'block' : 'none';
+        if (!show) selectedPainZones = [];
+    }
+
+    function togglePainChip(btn, zone) {
+        btn.classList.toggle('selected');
+        if (selectedPainZones.includes(zone)) {
+            selectedPainZones = selectedPainZones.filter(z => z !== zone);
+        } else {
+            selectedPainZones.push(zone);
+        }
+    }
+
+    function submitFeedback() {
+        const errorDiv = document.getElementById('feedbackError');
+        errorDiv.style.display = 'none';
+
+        if (!selectedDifficulty) {
+            errorDiv.innerText = "Veuillez sélectionner votre niveau de ressenti.";
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        const currentEx = currentActiveTest.exercises[currentExIndex];
+        let repsAchieved = null;
+
+        if (selectedDifficulty === 'Impossible') {
+            const repsVal = document.getElementById('inputRepsCount').value.trim();
+            if (repsVal === "" || isNaN(repsVal) || Number(repsVal) < 0) {
+                errorDiv.innerText = "Veuillez renseigner le nombre de répétitions réalisées.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+            repsAchieved = parseInt(repsVal, 10);
+        } else {
+            // Enregistre automatiquement le nombre de répétitions demandées si défini
+            repsAchieved = currentEx.targetReps !== undefined ? currentEx.targetReps : null;
+        }
+
+        const painToggleVal = document.querySelector('input[name="painToggle"]:checked').value;
+        if (painToggleVal === 'oui' && selectedPainZones.length === 0) {
+            errorDiv.innerText = "Veuillez indiquer au moins une zone de douleur.";
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        const exerciseData = {
+            exerciseName: currentEx.name,
+            category: currentEx.category,
+            status: "completed",
+            durationSeconds: timerSeconds,
+            targetTimeSeconds: targetTimeSeconds,
+            pauseCount: pauseCount,
+            pauseDurations: [...pauseDurations],
+            difficulty: selectedDifficulty,
+            repsCompleted: repsAchieved,
+            hasPain: painToggleVal === 'oui',
+            painZones: painToggleVal === 'oui' ? [...selectedPainZones] : [],
+            skipReason: null
+        };
+        activeSessionRecord.exercises.push(exerciseData);
+
+        document.getElementById('modalFeedback').style.display = 'none';
+
+        if (currentExIndex + 1 < currentActiveTest.exercises.length) {
+            loadExercise(currentExIndex + 1);
+        } else {
+            finishSession();
+        }
+    }
+
+    function openSkipModal() {
+        clearInterval(timerInterval);
+
+        if (isTimerPaused && pauseStartTimestamp) {
+            const elapsedPauseSec = Math.max(1, Math.round((Date.now() - pauseStartTimestamp) / 1000));
+            pauseDurations.push(elapsedPauseSec);
+            pauseStartTimestamp = null;
+        }
+
+        document.getElementById('skipError').style.display = 'none';
+        document.querySelectorAll('input[name="skipReason"]').forEach(r => r.checked = false);
+        document.getElementById('skipOtherContainer').style.display = 'none';
+        document.getElementById('inputSkipOther').value = "";
+        document.getElementById('modalSkipReason').style.display = 'flex';
+    }
+
+    function handleSkipReasonChange(radio) {
+        const otherBox = document.getElementById('skipOtherContainer');
+        otherBox.style.display = (radio.value === 'Autre') ? 'block' : 'none';
+    }
+
+    function confirmSkipExercise() {
+        const errorDiv = document.getElementById('skipError');
+        errorDiv.style.display = 'none';
+
+        const selectedRadio = document.querySelector('input[name="skipReason"]:checked');
+        
+        if (!selectedRadio) {
+            errorDiv.innerText = "Veuillez sélectionner un motif pour continuer.";
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        let finalReason = selectedRadio.value;
+        if (finalReason === 'Autre') {
+            const otherText = document.getElementById('inputSkipOther').value.trim();
+            if (otherText === "") {
+                errorDiv.innerText = "Veuillez préciser votre motif.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+            finalReason = `Autre: ${otherText}`;
+        }
+
+        const currentEx = currentActiveTest.exercises[currentExIndex];
+
+        const exerciseData = {
+            exerciseName: currentEx.name,
+            category: currentEx.category,
+            status: "skipped",
+            durationSeconds: timerSeconds,
+            targetTimeSeconds: targetTimeSeconds,
+            pauseCount: pauseCount,
+            pauseDurations: [...pauseDurations],
+            difficulty: null,
+            repsCompleted: null,
+            hasPain: false,
+            painZones: [],
+            skipReason: finalReason
+        };
+        activeSessionRecord.exercises.push(exerciseData);
+
+        document.getElementById('modalSkipReason').style.display = 'none';
+
+        if (currentExIndex + 1 < currentActiveTest.exercises.length) {
+            loadExercise(currentExIndex + 1);
+        } else {
+            finishSession();
+        }
+    }
+
+    async function finishSession() {
+        clearInterval(timerInterval);
+
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const dateStr = new Date().toLocaleDateString('fr-FR', options);
+        
+        const stateKey = currentActiveTest === testMobiliteSingleDay ? 'test_mobilite_state' : 'test_niveau_single_state';
+        saveTestState(stateKey, { lastCompletedDate: dateStr });
+
+        const recordsKey = currentActiveTest === testMobiliteSingleDay ? 'test_mobilite_results' : 'test_results';
+        localStorage.setItem(recordsKey, JSON.stringify(activeSessionRecord));
+
+        const existingRecords = JSON.parse(localStorage.getItem('admin_test_records') || "[]");
+        existingRecords.push(activeSessionRecord);
+        localStorage.setItem('admin_test_records', JSON.stringify(existingRecords));
+
+        if (auth.currentUser) {
+            try {
+                const userRef = doc(db, "users", auth.currentUser.uid);
+                await updateDoc(userRef, {
+                    lastTestDate: dateStr,
+                    lastTestRecord: activeSessionRecord
+                });
+            } catch (error) {
+                console.error("Erreur Firestore :", error);
+            }
+        }
+
+        const container = document.getElementById('sessionContent');
+        container.innerHTML = `
+            <div class="session-header">
+                <h2>🎉 Evaluation terminée !</h2>
+            </div>
+            <div class="instruction-card">
+                "Vos résultats pour '${currentActiveTest.title}' ont été enregistrés avec succès."
+            </div>
+
+            <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-top:20px;">Progression globale : 100% (${currentActiveTest.exercises.length} sur ${currentActiveTest.exercises.length} exercices)</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: 100%;"></div>
+            </div>
+
+            <button class="btn-start-main" style="margin-top:20px; margin-bottom:0;" onclick="returnToDashboard()">Retour aux tests</button>
+        `;
+    }
+
+    function returnToDashboard() {
+        document.getElementById('sessionRunner').classList.remove('active');
+        window.location.reload();
+    }
+
+    function closeModal() {
+        document.getElementById('modalItem').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target === document.getElementById('modalItem')) closeModal();
+        if (!event.target.closest('.dropdown')) {
+            document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
+        }
+    };
+
+    Object.assign(window, {
+        openAdminModal,
+        loadAdminKeyData,
+        saveAdminData,
+        switchTab,
+        toggleDropdown,
+        updateTestsFilters,
+        updateEvalsFilters,
+        openModal,
+        startSingleDaySession,
+        loadExercise,
+        toggleTimer,
+        openFeedbackModal,
+        selectDifficulty,
+        togglePainZones,
+        togglePainChip,
+        submitFeedback,
+        openSkipModal,
+        handleSkipReasonChange,
+        confirmSkipExercise,
+        returnToDashboard,
+        closeModal
+    });
+
+    renderTests();
+    renderEvals();
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("tuto") === "true") {
+            openModal('tests', 'test-niveau');
+            const btnClose = document.querySelector("#modalItem .btn-action-skip");
+            if (btnClose) btnClose.style.display = "none";
+        }
+    });
+</script>
+</body>
+</html>

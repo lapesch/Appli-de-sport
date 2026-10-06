@@ -1,0 +1,73 @@
+/* Style pour la page de connexion */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+#auth-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    width: 300px;
+    text-align: center;
+}
+
+h1 { color: #2c3e50; font-size: 1.5rem; margin-bottom: 20px; }
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+#google-btn { background-color: #4285F4; color: white; }
+#login-btn { background-color: #27ae60; color: white; }
+#signup-btn { background-color: #7f8c8d; color: white; }
+
+button:hover { opacity: 0.85; }
+hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
+/* À ajouter aussi dans ton CSS principal pour le questionnaire */
+.btn-back {
+    background-color: #29292e;
+    color: #a8a8b3;
+    border: 1px solid #3e3e46;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+    background-color: #3e3e46;
+    color: #ffffff;
+}
+/* Style du logo d'accueil */
+.app-logo {
+    width: 110px;
+    height: auto;
+    display: block;
+    margin: 0 auto 12px auto;
+    border-radius: 12px;
+}

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff9900">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script src="theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Parcours - Mon Carnet Sportif</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --accent: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-gold: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --border: #334155;
+            --glow-gold: rgba(245, 158, 11, 0.25);
+            --glow-blue: rgba(59, 130, 246, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 20px; max-width: 600px; margin: 0 auto; min-height: 100vh; }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .btn-header { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; }
+        .btn-header:hover { border-color: var(--accent-gold); }
+
+        .program-header-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .program-title { font-size: 1.1rem; font-weight: 800; color: var(--accent-gold); margin-bottom: 4px; }
+        .program-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
+
+        /* PARCOURS DUOLINGO */
+        .duolingo-path {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 0 40px 0;
+            margin: 0 auto;
+        }
+
+        .path-node-wrapper {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .offset-center   { transform: translateX(0px); }
+        .offset-right    { transform: translateX(35px); }
+        .offset-right-far{ transform: translateX(70px); }
+        .offset-left     { transform: translateX(-35px); }
+        .offset-left-far { transform: translateX(-70px); }
+
+        .node-btn {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-card);
+            border: 4px solid var(--border);
+            box-shadow: 0 6px 0 var(--border), 0 10px 15px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+
+        .node-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 var(--border);
+        }
+
+        .node-btn.is-today {
+            border-color: var(--accent-blue);
+            box-shadow: 0 6px 0 #1d4ed8, 0 0 20px var(--glow-blue);
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            animation: pulse-node 2s infinite;
+        }
+
+        @keyframes pulse-node {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        .node-btn.completed {
+            border-color: var(--accent);
+            box-shadow: 0 6px 0 #047857;
+            background: linear-gradient(135deg, #10b981, #047857);
+            color: white;
+        }
+
+        .node-btn.locked {
+            border-color: #334155;
+            box-shadow: 0 6px 0 #1e293b;
+            background: #0f172a;
+            color: var(--text-muted);
+        }
+
+        .node-label {
+            margin-top: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-align: center;
+            white-space: nowrap;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mascotte-floating {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+            animation: float 3s ease-in-out infinite;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .mascotte-left { left: -85px; top: -5px; }
+        .mascotte-right { right: -85px; top: -5px; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .btn-delete { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; float: right; margin-top: 15px; }
+        .btn-delete:hover { background: var(--danger); color: white; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 style="font-size: 1.2rem; color: var(--accent-gold);">🗺️ Mon Parcours</h1>
+        <a href="tous_les_Programmes.html" class="btn-header">➕ Programmes</a>
+    </header>
+
+    <div id="parcoursContainer"></div>
+
+    <script type="module">
+        import { auth } from "./firebase-config.js";
+        import { chargerDonneesCloud, sauvegarderDonneesCloud } from "./storage.js";
+
+        const activeProfile = sessionStorage.getItem("activeProfile") || "Principal";
+        let myPrograms = [];
+
+        loadLocalPrograms();
+        renderParcours();
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                try {
+                    const cloud = await chargerDonneesCloud("activePrograms");
+                    if (cloud && cloud[activeProfile]) {
+                        myPrograms = cloud[activeProfile];
+                        renderParcours();
+                    }
+                } catch(e) {
+                    console.error("Erreur sync cloud :", e);
+                }
+            }
+        });
+
+        function loadLocalPrograms() {
+            const local = localStorage.getItem(`activePrograms_${activeProfile}`);
+            if (local) {
+                try { myPrograms = JSON.parse(local); } catch(e) { myPrograms = []; }
+            }
+        }
+
+        function getTodayDateString() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function formatDateFR(isoDateStr) {
+            if (!isoDateStr) return "Sans date";
+            const [y, m, d] = isoDateStr.split("-");
+            const dateObj = new Date(y, m - 1, d);
+            return dateObj.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+        }
+
+        function addDaysToDate(baseDateStr, daysToAdd) {
+            if (!baseDateStr) return getTodayDateString();
+            const [y, m, d] = baseDateStr.split("-");
+            const dateObj = new Date(y, m - 1, d);
+            dateObj.setDate(dateObj.getDate() + daysToAdd);
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Fenêtre glissante basée sur les vraies dates calculées dans le programme
+        function generateWindowedPath(prog) {
+            const baseSeances = prog.seances || [];
+            if (baseSeances.length === 0) return [];
+
+            const expandedSeances = [];
+            const historyMap = prog.completedHistory || {};
+            const cycleDurationDays = prog.cycleDays || (baseSeances.length > 5 ? 14 : 7);
+
+            const today = new Date();
+            const startDateStr = baseSeances[0]?.date || prog.startDate || getTodayDateString();
+            
+            const [y, m, d] = startDateStr.split("-");
+            const startDate = new Date(y, m - 1, d);
+            
+            const diffMs = today.getTime() - startDate.getTime();
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            const currentCycle = Math.floor(diffDays / cycleDurationDays);
+
+            const startCycle = Math.max(0, currentCycle - 1);
+            const endCycle = Math.max(1, currentCycle + 2);
+
+            for (let cycle = startCycle; cycle < endCycle; cycle++) {
+                baseSeances.forEach((s, baseIdx) => {
+                    const cycleOffset = cycle * cycleDurationDays;
+                    const calculatedDate = addDaysToDate(s.date || startDateStr, cycleOffset);
+
+                    const uniqueKey = `${prog.id}_c${cycle}_s${baseIdx}`;
+                    const isCompleted = historyMap[calculatedDate] || (cycle === 0 && s.completed && historyMap[calculatedDate] !== false);
+
+                    expandedSeances.push({
+                        ...s,
+                        uniqueId: uniqueKey,
+                        date: calculatedDate,
+                        cycleIndex: cycle,
+                        baseIndex: baseIdx,
+                        completed: !!isCompleted
+                    });
+                });
+            }
+
+            return expandedSeances;
+        }
+
+        function renderParcours() {
+            const container = document.getElementById("parcoursContainer");
+            container.innerHTML = "";
+
+            const activeList = myPrograms.filter(p => p.status === "actif");
+
+            if (activeList.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p style="font-size: 1.1rem; margin-bottom: 10px;">Aucun programme actif.</p>
+                        <p style="font-size: 0.85rem; margin-bottom: 20px;">Va dans le catalogue pour choisir et planifier ton entraînement.</p>
+                        <a href="tous_les_programmes.html" class="btn-header" style="display: inline-block;">📚 Consulter le catalogue</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const todayStr = getTodayDateString();
+
+            const offsets = [
+                "offset-center",
+                "offset-right",
+                "offset-right-far",
+                "offset-right",
+                "offset-center",
+                "offset-left",
+                "offset-left-far",
+                "offset-left"
+            ];
+
+            activeList.forEach((prog) => {
+                const visiblePath = generateWindowedPath(prog);
+                const completedCount = visiblePath.filter(s => s.completed).length;
+
+                const wrapper = document.createElement("div");
+
+                wrapper.innerHTML = `
+                    <div class="program-header-card">
+                        <div class="program-title">${prog.nom}</div>
+                        <div class="program-desc">${prog.freq || 'Programme continu'} • ${completedCount} séance(s) effectuée(s)</div>
+                    </div>
+                `;
+
+                const pathEl = document.createElement("div");
+                pathEl.className = "duolingo-path";
+
+                visiblePath.forEach((s, idx) => {
+                    const isToday = (s.date === todayStr);
+                    const isCompleted = s.completed === true;
+                    const offsetClass = offsets[idx % offsets.length];
+
+                    let statusClass = "locked";
+                    let icon = "🔒";
+
+                    if (isCompleted) {
+                        statusClass = "completed";
+                        icon = "✅";
+                    } else if (isToday) {
+                        statusClass = "is-today";
+                        icon = "🔥";
+                    }
+
+                    const nodeWrapper = document.createElement("div");
+                    nodeWrapper.className = `path-node-wrapper ${offsetClass}`;
+
+                    let mascotteHtml = "";
+                    const patternPos = idx % 8;
+                    
+                    if (patternPos === 2) {
+                        mascotteHtml = `<img id="mascotte_${s.uniqueId}" src="images/mascotte.png" alt="Mascotte" class="mascotte-floating mascotte-left">`;
+                    } else if (patternPos === 6) {
+                        mascotteHtml = `<img id="mascotte_${s.uniqueId}" src="images/mascotte.png" alt="Mascotte" class="mascotte-floating mascotte-right">`;
+                    }
+
+                    nodeWrapper.innerHTML = `
+                        ${mascotteHtml}
+                        <button class="node-btn ${statusClass}" onclick="demarrerSeance('${prog.id}', '${s.uniqueId}', '${s.date}')">
+                            ${icon}
+                        </button>
+                        <div class="node-label">
+                            ${s.nom}<br>
+                            <span style="color: ${isToday ? 'var(--accent-blue)' : 'var(--text-muted)'}; font-size: 0.65rem;">
+                                ${formatDateFR(s.date)}
+                            </span>
+                        </div>
+                    `;
+
+                    pathEl.appendChild(nodeWrapper);
+                });
+
+                wrapper.appendChild(pathEl);
+
+                const btnDel = document.createElement("button");
+                btnDel.className = "btn-delete";
+                btnDel.textContent = "🗑️ Retirer du planning";
+                btnDel.onclick = () => supprimerProgramme(prog.id);
+                wrapper.appendChild(btnDel);
+
+                const clearDiv = document.createElement("div");
+                clearDiv.style.clear = "both";
+                wrapper.appendChild(clearDiv);
+
+                container.appendChild(wrapper);
+            });
+
+            setTimeout(() => {
+                const todayNode = document.querySelector('.node-btn.is-today');
+                if (todayNode) {
+                    todayNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        }
+
+        window.demarrerSeance = function(programId, seanceUniqueId, seanceDate) {
+            const prog = myPrograms.find(p => p.id === programId);
+            if (!prog) return;
+
+            const todayStr = getTodayDateString();
+
+            if (seanceDate !== todayStr) {
+                const mascotteTarget = document.getElementById(`mascotte_${seanceUniqueId}`) || document.querySelector('.mascotte-floating');
+                if (mascotteTarget) {
+                    mascotteTarget.src = "images/Mascotte_Repos.png";
+                    mascotteTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+
+            document.querySelectorAll('.mascotte-floating').forEach(img => img.src = "images/mascotte.png");
+
+            const visiblePath = generateWindowedPath(prog);
+            const seanceData = visiblePath.find(s => s.uniqueId === seanceUniqueId);
+
+            sessionStorage.setItem("activeSeanceContext", JSON.stringify({
+                programId: programId,
+                seanceUniqueId: seanceUniqueId,
+                seanceData: seanceData
+            }));
+
+            window.location.href = "execution.html";
+        };
+
+        window.supprimerProgramme = async function(programId) {
+            if (!confirm("Veux-tu retirer ce programme de ton planning ? Tes séances passées restent enregistrées dans ton historique.")) return;
+
+            const targetProg = myPrograms.find(p => p.id === programId);
+            if (targetProg) {
+                targetProg.status = "supprime";
+            }
+
+            localStorage.setItem(`activePrograms_${activeProfile}`, JSON.stringify(myPrograms));
+
+            if (auth.currentUser) {
+                try {
+                    const cloud = await chargerDonneesCloud("activePrograms") || {};
+                    cloud[activeProfile] = myPrograms;
+                    await sauvegarderDonneesCloud("activePrograms", cloud);
+                } catch(e) {
+                    console.error("Erreur suppression cloud :", e);
+                }
+            }
+
+            renderParcours();
+        };
+    </script>
+</body>
+</html>

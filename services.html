@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- Fichier Web Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Personnalisation de la barre d'état Android -->
+<meta name="theme-color" content="#ff9900">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autres Services - Mon Carnet Sportif</title>
+    <link rel="stylesheet" href="style-auth.css">
+    <!-- Feuille de style pour les boutons illustrés -->
+    <link rel="stylesheet" href="buttons.css">
+</head>
+<body>
+    <div id="auth-container">
+        <h1>Autres Services</h1>
+        
+        <!-- Bouton Nutrition illustré -->
+        <button id="nutrition-btn" class="btn-img" data-img-ref="nutrition" onclick="window.location.href='nutrition.html'">Nutrition</button>
+        
+        <!-- Bouton Suivi du Sommeil illustré avec l'image sommeil.png -->
+        <button id="sommeil-btn" class="btn-img" data-img-ref="sommeil" onclick="window.location.href='sommeil.html'">Suivi du sommeil</button>
+        
+        <hr>
+        
+        <!-- Retour au menu principal -->
+        <button id="back-btn" onclick="window.location.href='dashboard.html'">Retour</button>
+    </div>
+
+    <!-- Script de gestion des images de boutons -->
+    <script src="button-images.js"></script>
+</body>
+</html>

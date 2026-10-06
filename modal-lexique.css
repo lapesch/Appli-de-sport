@@ -1,0 +1,63 @@
+/* Overlay d'arrière-plan */
+.modal-explication-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.modal-explication-overlay.active {
+    display: flex;
+}
+
+/* Carte centrale */
+.modal-explication-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    padding: 24px;
+    color: #f8fafc;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    font-family: inherit;
+}
+
+/* Bouton de fermeture */
+.modal-explication-close {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 1.8rem;
+    color: #94a3b8;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s ease;
+}
+
+.modal-explication-close:hover {
+    color: #ef4444;
+}
+
+/* Style pour l'élément cliquable dans la séance */
+.nom-exercice-cliquable {
+    cursor: pointer;
+    text-decoration: underline dotted;
+    transition: color 0.2s ease;
+}
+
+.nom-exercice-cliquable:hover {
+    color: #38bdf8;
+}

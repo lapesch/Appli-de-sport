@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff9900">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script src="theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Séance en cours - Mon Carnet Sportif</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --accent: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-gold: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --border: #334155;
+            --glow-gold: rgba(245, 158, 11, 0.25);
+            --glow-blue: rgba(59, 130, 246, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 20px; max-width: 600px; margin: 0 auto; min-height: 100vh; }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .btn-quit { background: transparent; color: var(--text-muted); border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        .progress-bar-bg { background: var(--bg-card); border-radius: 10px; height: 10px; width: 100%; overflow: hidden; border: 1px solid var(--border); margin-bottom: 20px; }
+        .progress-bar-fill { background: linear-gradient(90deg, var(--accent-blue), var(--accent)); height: 100%; width: 0%; transition: width 0.3s ease; }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .exo-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .exo-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            cursor: pointer;
+            text-decoration: underline dotted;
+            transition: opacity 0.2s ease;
+        }
+        .exo-title:hover { opacity: 0.8; }
+        .exo-target { font-size: 0.9rem; color: var(--text-muted); margin-top: 4px; }
+
+        .sets-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .set-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .set-item.completed {
+            border-color: var(--accent);
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent);
+        }
+
+        .set-item.active {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 10px var(--glow-blue);
+        }
+
+        /* TIMER OVERLAY / CARD */
+        .timer-card {
+            display: none;
+            text-align: center;
+            background: var(--bg-card);
+            border: 2px solid var(--accent-blue);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .timer-val { font-size: 3rem; font-weight: 900; color: var(--accent-blue); font-variant-numeric: tabular-nums; margin: 10px 0; }
+        .timer-controls { display: flex; justify-content: center; gap: 10px; }
+        .btn-timer { background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+        /* BOUTON D'ACTION PRINCIPAL */
+        .btn-action {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #1e40af, 0 10px 20px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
+        }
+        .btn-action:active { transform: translateY(4px); box-shadow: 0 2px 0 #1e40af; }
+
+        /* MASCOTTE DE COMPAGNIE */
+        .mascotte-container { display: flex; align-items: center; gap: 12px; margin-top: 25px; background: rgba(30, 41, 59, 0.5); padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
+        .mascotte-img { width: 50px; height: 50px; object-fit: contain; }
+        .mascotte-speech { font-size: 0.85rem; color: var(--text-main); font-style: italic; }
+
+        /* MODAL INTERACTIF PAUSE / ABANDON */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .modal-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; color: var(--accent-gold); }
+        .modal-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+        .modal-actions { display: flex; flex-direction: column; gap: 10px; }
+        .btn-modal { padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-size: 0.95rem; }
+        .btn-pause { background: var(--accent-blue); color: white; }
+        .btn-abandon { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+        .btn-cancel { background: var(--bg-main); color: var(--text-muted); border: 1px solid var(--border); }
+
+        /* MODAL EXPLICATION / LEXIQUE */
+        .modal-explication-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .modal-explication-overlay.active { display: flex; }
+        .modal-explication-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            padding: 24px;
+            color: var(--text-main);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        .modal-explication-close {
+            position: absolute;
+            top: 12px; right: 18px;
+            font-size: 1.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.15s ease;
+        }
+        .modal-explication-close:hover { color: var(--danger); }
+
+        /* ECRAN DE FIN */
+        #summaryView { display: none; text-align: center; padding: 20px 0; }
+        .trophy-icon { font-size: 4rem; margin-bottom: 10px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <!-- ENTÊTE DE SÉANCE -->
+    <header>
+        <button class="btn-quit" onclick="ouvrirModalQuitter()">✕</button>
+        <h2 id="seanceTitle" style="font-size: 1.1rem; color: var(--accent-gold);">Séance</h2>
+        <div style="width: 38px;"></div>
+    </header>
+
+    <div class="progress-bar-bg">
+        <div id="progressBar" class="progress-bar-fill"></div>
+    </div>
+
+    <!-- VUE EXERCICE EN COURS -->
+    <main id="workoutView">
+        <div class="card">
+            <div class="exo-header">
+                <div>
+                    <div id="exoIndex" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">EXERCICE 1 / 1</div>
+                    <div id="exoName" class="exo-title" title="Cliquer pour voir l'explication">Nom Exercice</div>
+                </div>
+            </div>
+            <div id="exoTarget" class="exo-target">4 séries • 10 répétitions @ 20 kg</div>
+        </div>
+
+        <div id="setsList" class="sets-list"></div>
+
+        <!-- TIMEOUT DE REPOS -->
+        <div id="timerCard" class="timer-card">
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">TEMPS DE REPOS</div>
+            <div id="timerValue" class="timer-val">01:30</div>
+            <div class="timer-controls">
+                <button class="btn-timer" onclick="ajusterTimer(-15)">-15s</button>
+                <button class="btn-timer" onclick="passerRepos()">Passer ⏩</button>
+                <button class="btn-timer" onclick="ajusterTimer(15)">+15s</button>
+            </div>
+        </div>
+
+        <button id="btnAction" class="btn-action" onclick="validerEtape()">VALIDER LA SÉRIE 1</button>
+
+        <div class="mascotte-container">
+            <img src="images/mascotte.png" alt="Mascotte" class="mascotte-img">
+            <div id="mascotteSpeech" class="mascotte-speech">Donne tout sur cette première série !</div>
+        </div>
+    </main>
+
+    <!-- VUE DE FIN DE SÉANCE -->
+    <div id="summaryView">
+        <div class="trophy-icon">🏆</div>
+        <h2 style="font-size: 1.5rem; color: var(--accent-gold); margin-bottom: 8px;">Séance Terminée !</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Excellent travail, objectif rempli avec succès.</p>
+        
+        <div class="card" style="text-align: left; margin-bottom: 25px;">
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">RÉCAPITULATIF</div>
+            <div id="recapContent" style="font-size: 0.95rem; font-weight: 600; line-height: 1.6;"></div>
+        </div>
+
+        <button class="btn-action" style="background: linear-gradient(135deg, var(--accent), #047857);" onclick="enregistrerEtQuitter()">ENREGISTRER LA SÉANCE</button>
+    </div>
+
+    <!-- MODAL QUITTER / PAUSE -->
+    <div id="quitModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title">Interrompre la séance ?</div>
+            <div class="modal-desc">Tu peux mettre ta séance en pause pour la reprendre plus tard ou l'abandonner.</div>
+            <div class="modal-actions">
+                <button class="btn-modal btn-pause" onclick="mettreEnPause()">⏸️ Mettre en pause</button>
+                <button class="btn-modal btn-abandon" onclick="abandonnerSeance()">🗑️️ Abandonner la séance</button>
+                <button class="btn-modal btn-cancel" onclick="fermerModalQuitter()">Reprendre la séance</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LEXIQUE / EXPLICATION DE L'EXERCICE -->
+    <div id="modal-explication" class="modal-explication-overlay" onclick="fermerModalExplication(event)">
+        <div class="modal-explication-card" onclick="event.stopPropagation()">
+            <span class="modal-explication-close" onclick="fermerModalExplicationDirect()">&times;</span>
+            <div id="modal-explication-content"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth } from "./firebase-config.js";
+        import { chargerDonneesCloud, sauvegarderDonneesCloud } from "./storage.js";
+
+        const activeProfile = sessionStorage.getItem("activeProfile") || "Principal";
+        let contextData = null;
+        let seanceData = null;
+
+        // État de la séance
+        let currentExoIdx = 0;
+        let currentSetIdx = 0;
+        let isResting = false;
+        let timerInterval = null;
+        let restTimeLeft = 0;
+
+        // Cache pour le lexique des exercices
+        let docLexiqueCache = null;
+
+        const encouragements = [
+            "Bien joué ! Respire bien pendant le repos.",
+            "Une de plus dans la poche, garde le rythme !",
+            "Reste concentré sur ton exécution !",
+            "Dernier effort sur cet exercice, lâche rien !",
+            "Tu exploses tes objectifs aujourd'hui !"
+        ];
+
+        window.onload = function() {
+            const rawContext = sessionStorage.getItem("activeSeanceContext");
+            if (!rawContext) {
+                window.location.href = "mes_programmes.html";
+                return;
+            }
+
+            contextData = JSON.parse(rawContext);
+            seanceData = contextData.seanceData;
+
+            // Restauration de la pause si elle existe
+            const savedState = localStorage.getItem(`pauseState_${activeProfile}_${contextData.seanceUniqueId}`);
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentExoIdx = state.currentExoIdx;
+                currentSetIdx = state.currentSetIdx;
+                localStorage.removeItem(`pauseState_${activeProfile}_${contextData.seanceUniqueId}`);
+            }
+
+            document.getElementById("seanceTitle").textContent = seanceData.nom || "Séance";
+            chargerExerciceActuel();
+        };
+
+        function chargerExerciceActuel() {
+            const exercices = seanceData.exercices || [];
+            if (currentExoIdx >= exercices.length) {
+                afficherEcranFin();
+                return;
+            }
+
+            const currentExo = exercices[currentExoIdx];
+            document.getElementById("exoIndex").textContent = `EXERCICE ${currentExoIdx + 1} / ${exercices.length}`;
+            
+            const exoNameEl = document.getElementById("exoName");
+            exoNameEl.textContent = currentExo.nom;
+            exoNameEl.onclick = () => window.ouvrirExplicationExercice(currentExo.id || currentExo.nom);
+
+            document.getElementById("exoTarget").textContent = `${currentExo.series} séries • ${currentExo.reps} réps ${currentExo.charge ? '@ ' + currentExo.charge + ' kg' : ''}`;
+
+            // Progression Globale
+            const totalExos = exercices.length;
+            const pct = Math.round((currentExoIdx / totalExos) * 100);
+            document.getElementById("progressBar").style.width = `${pct}%`;
+
+            // Rendu des séries
+            const setsContainer = document.getElementById("setsList");
+            setsContainer.innerHTML = "";
+
+            for (let i = 0; i < currentExo.series; i++) {
+                const setEl = document.createElement("div");
+                let statusClass = "";
+
+                if (i < currentSetIdx) {
+                    statusClass = "completed";
+                } else if (i === currentSetIdx) {
+                    statusClass = "active";
+                }
+
+                setEl.className = `set-item ${statusClass}`;
+                setEl.innerHTML = `<span>Série ${i + 1}</span><span>${currentExo.reps} réps ${currentExo.charge ? '• ' + currentExo.charge + ' kg' : ''} ${i < currentSetIdx ? '✅' : ''}</span>`;
+                setsContainer.appendChild(setEl);
+            }
+
+            majBoutonAction();
+        }
+
+        function majBoutonAction() {
+            const btn = document.getElementById("btnAction");
+
+            if (isResting) {
+                btn.style.display = "none";
+                document.getElementById("timerCard").style.display = "block";
+            } else {
+                btn.style.display = "block";
+                document.getElementById("timerCard").style.display = "none";
+                btn.textContent = `VALIDER LA SÉRIE ${currentSetIdx + 1}`;
+            }
+        }
+
+        window.validerEtape = function() {
+            const currentExo = seanceData.exercices[currentExoIdx];
+            currentSetIdx++;
+
+            if (currentSetIdx < currentExo.series) {
+                lancerRepos(currentExo.repos || 90);
+            } else {
+                currentExoIdx++;
+                currentSetIdx = 0;
+                if (currentExoIdx < seanceData.exercices.length) {
+                    lancerRepos(currentExo.repos || 90);
+                } else {
+                    afficherEcranFin();
+                }
+            }
+
+            chargerExerciceActuel();
+        };
+
+        function lancerRepos(secondes) {
+            isResting = true;
+            restTimeLeft = secondes;
+            majBoutonAction();
+
+            const randomMsg = encouragements[Math.floor(Math.random() * encouragements.length)];
+            document.getElementById("mascotteSpeech").textContent = randomMsg;
+
+            afficherTempsFormate();
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                restTimeLeft--;
+                afficherTempsFormate();
+
+                if (restTimeLeft <= 0) {
+                    passerRepos();
+                }
+            }, 1000);
+        }
+
+        function afficherTempsFormate() {
+            const m = String(Math.floor(restTimeLeft / 60)).padStart(2, '0');
+            const s = String(restTimeLeft % 60).padStart(2, '0');
+            document.getElementById("timerValue").textContent = `${m}:${s}`;
+        }
+
+        window.ajusterTimer = function(sec) {
+            restTimeLeft = Math.max(0, restTimeLeft + sec);
+            afficherTempsFormate();
+        };
+
+        window.passerRepos = function() {
+            clearInterval(timerInterval);
+            isResting = false;
+            majBoutonAction();
+        };
+
+        function afficherEcranFin() {
+            document.getElementById("workoutView").style.display = "none";
+            document.getElementById("summaryView").style.display = "block";
+            document.getElementById("progressBar").style.width = "100%";
+
+            const recap = document.getElementById("recapContent");
+            recap.innerHTML = seanceData.exercices.map(e => `
+                <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+                    <span>✓ ${e.nom}</span>
+                    <span style="color:var(--accent);">${e.series} × ${e.reps}</span>
+                </div>
+            `).join("");
+
+            document.getElementById("mascotteSpeech").textContent = "Félicitations pour cette séance !";
+        }
+
+        window.enregistrerEtQuitter = async function() {
+            const local = localStorage.getItem(`activePrograms_${activeProfile}`);
+            if (local) {
+                let programs = JSON.parse(local);
+                let prog = programs.find(p => p.id === contextData.programId);
+                if (prog) {
+                    if (!prog.completedHistory) prog.completedHistory = {};
+                    prog.completedHistory[contextData.seanceData.date] = true;
+
+                    localStorage.setItem(`activePrograms_${activeProfile}`, JSON.stringify(programs));
+
+                    if (auth.currentUser) {
+                        try {
+                            const cloud = await chargerDonneesCloud("activePrograms") || {};
+                            cloud[activeProfile] = programs;
+                            await sauvegarderDonneesCloud("activePrograms", cloud);
+                        } catch(e) { console.error("Erreur sync Cloud :", e); }
+                    }
+                }
+            }
+
+            sessionStorage.removeItem("activeSeanceContext");
+            window.location.href = "mes_programmes.html";
+        };
+
+        /* GESTION DU POPUP DE QUITTANCE */
+        window.ouvrirModalQuitter = function() {
+            document.getElementById("quitModal").style.display = "flex";
+        };
+
+        window.fermerModalQuitter = function() {
+            document.getElementById("quitModal").style.display = "none";
+        };
+
+        window.mettreEnPause = function() {
+            const state = { currentExoIdx, currentSetIdx };
+            localStorage.setItem(`pauseState_${activeProfile}_${contextData.seanceUniqueId}`, JSON.stringify(state));
+            window.location.href = "mes_programmes.html";
+        };
+
+        window.abandonnerSeance = function() {
+            sessionStorage.removeItem("activeSeanceContext");
+            window.location.href = "mes_programmes.html";
+        };
+
+        /* GESTION DU LEXIQUE D'EXERCICES */
+        window.ouvrirExplicationExercice = async function(idExercice) {
+            const contentBox = document.getElementById('modal-explication-content');
+            const modal = document.getElementById('modal-explication');
+
+            if (!contentBox || !modal) return;
+
+            contentBox.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>Chargement de la fiche...</p>";
+            modal.classList.add('active');
+
+            try {
+                if (!docLexiqueCache) {
+                    const reponse = await fetch('lexique_exercices.html');
+                    if (!reponse.ok) throw new Error("Fichier lexique introuvable");
+                    const htmlTexte = await reponse.text();
+                    const parser = new DOMParser();
+                    docLexiqueCache = parser.parseFromString(htmlTexte, 'text/html');
+                }
+
+                const idFormatte = String(idExercice).toLowerCase().trim().replace(/[\s_]+/g, '-');
+                const fiche = docLexiqueCache.querySelector(`#sheet-${idExercice}`) || 
+                              docLexiqueCache.querySelector(`#sheet-${idFormatte}`);
+
+                if (!fiche) {
+                    contentBox.innerHTML = `
+                        <h3 style="color:var(--danger); margin-bottom:10px;">Fiche non trouvée</h3>
+                        <p style="color:var(--text-muted);">La fiche d'explication pour cet exercice n'est pas encore disponible dans le lexique.</p>
+                    `;
+                    return;
+                }
+
+                const titre = fiche.querySelector('h2')?.outerHTML || `<h3>${idExercice}</h3>`;
+                const blocsH3 = Array.from(fiche.querySelectorAll('h3'));
+                
+                const blocExecution = blocsH3.find(h => h.textContent.includes('Exécution'))?.parentElement;
+                const blocMuscles = blocsH3.find(h => h.textContent.includes('Muscles'))?.parentElement;
+
+                let htmlFinal = `<div style="border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px;">${titre}</div>`;
+
+                if (blocExecution) htmlFinal += blocExecution.outerHTML;
+                if (blocMuscles) htmlFinal += blocMuscles.outerHTML;
+
+                if (!blocExecution && !blocMuscles) {
+                    htmlFinal += fiche.innerHTML;
+                }
+
+                contentBox.innerHTML = htmlFinal;
+
+            } catch (erreur) {
+                console.error("Erreur lors de la récupération du lexique :", erreur);
+                contentBox.innerHTML = "<p style='color:var(--danger);'>Impossible de charger la fiche d'explication.</p>";
+            }
+        };
+
+        window.fermerModalExplication = function(event) {
+            if (event.target.id === 'modal-explication') {
+                document.getElementById('modal-explication').classList.remove('active');
+            }
+        };
+
+        window.fermerModalExplicationDirect = function() {
+            document.getElementById('modal-explication').classList.remove('active');
+        };
+    </script>
+</body>
+</html>

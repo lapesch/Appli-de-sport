@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- Fichier Web Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Personnalisation de la barre d'état Android -->
+<meta name="theme-color" content="#ff9900">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Carnet Sportif</title>
+    
+    <!-- Favicon pour l'onglet du navigateur -->
+    <link rel="icon" type="image/png" href="images/logo.png">
+    
+    <link rel="stylesheet" href="style-auth.css">
+</head>
+<body>
+    <div id="auth-container">
+        <!-- Ajout du logo -->
+        <img src="images/logo.png" alt="Logo Mon Carnet Sportif" class="app-logo">
+        
+        <h1>Mon Carnet Sportif</h1>
+        
+        <button id="google-btn">Continuer avec Google</button>
+        <hr>
+        
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Mot de passe">
+        <button id="login-btn">Connexion</button>
+        <button id="signup-btn">Créer un compte</button>
+      <p id="auth-error" style="color: #ef4444; font-size: 0.9rem; margin-top: 10px; display: none; text-align: center;"></p>
+    </div>
+    
+    <!-- SDKs Firebase Compat v12.16.0 -->
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+
+    <!-- Script de gestion d'authentification et d'automatisation Firestore -->
+    <script src="app.js"></script>
+</body>
+</html>

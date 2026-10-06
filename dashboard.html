@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff9900">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - Mon Carnet Sportif</title>
+
+    <script src="theme.js"></script>
+    <link rel="stylesheet" href="style-dashboard.css">
+    <link rel="stylesheet" href="buttons.css">
+
+    <style>
+        .dashboard-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* Card Mascotte & Action Rapide MVP */
+        .mascot-card {
+            background: linear-gradient(135deg, #1f1f24 0%, #121214 100%);
+            border: 1px solid #00B37E;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 15px rgba(0, 179, 126, 0.15);
+        }
+
+        .mascot-avatar {
+            width: 75px;
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .mascot-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+            transition: transform 0.2s ease;
+        }
+
+        .mascot-avatar img:hover {
+            transform: scale(1.05) rotate(-3deg);
+        }
+
+        .mascot-content {
+            flex-grow: 1;
+        }
+
+        .mascot-speech {
+            font-size: 0.88rem;
+            color: #e1e1e6;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .btn-primary-action {
+            background: #00B37E;
+            color: #121214;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .btn-primary-action:hover {
+            background: #009d6e;
+            transform: scale(1.01);
+        }
+
+        /* Grille des sections */
+        .dashboard-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .section-card {
+            background: #121214;
+            border: 1px solid #29292e;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            color: #ff9900;
+            margin-top: 0;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-menu {
+            background: #202024;
+            color: #e1e1e6;
+            border: 1px solid #29292e;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: left;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-menu:hover {
+            background: #29292e;
+            color: #fff;
+        }
+
+        /* Modale Suivi */
+        .modal-overlay {
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(5px);
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000;
+        }
+        .modal-box {
+            background: #121214;
+            border: 2px solid #29292e;
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 400px;
+            width: 90%;
+            box-sizing: border-box;
+            color: #e1e1e6;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        .modal-box h2 {
+            margin-top: 0;
+            color: #00B37E;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        .modal-box p {
+            font-size: 0.85rem;
+            color: #a8a8b3;
+            margin-bottom: 20px;
+        }
+        .popup-buttons-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn-popup-action {
+            background: #00B37E;
+            color: #121214;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            font-size: 0.95rem;
+        }
+        .btn-popup-action:hover {
+            background: #009d6e;
+            transform: scale(1.02);
+        }
+        .btn-popup-close {
+            background: transparent;
+            border: 1px solid #29292e;
+            color: #a8a8b3;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            margin-top: 5px;
+        }
+        .btn-popup-close:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <!-- HEADER -->
+        <header class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div>
+                <h1 id="header-message" style="font-size: 1.2rem; margin: 0;">Chargement...</h1>
+                <span id="user-grade-badge" class="badge-loading" style="font-size: 0.8rem; color: #a8a8b3;">Vérification...</span>
+            </div>
+            <button id="btn-switch-profile" style="background-color: #ff9900; color: #121214; border: none; padding: 8px 12px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
+                🔄 Changer de profil
+            </button>
+        </header>
+
+        <!-- ZONE MASCOTTE & ACTION DU JOUR -->
+        <div class="mascot-card" id="mascot-container">
+            <div class="mascot-avatar">
+                <img src="images/mascotte.png" alt="Mascotte Dragon">
+            </div>
+            <div class="mascot-content">
+                <div class="mascot-speech" id="mascot-text">
+                    Préparation de ton programme en cours...
+                </div>
+                <button class="btn-primary-action" id="btn-action-du-jour" onclick="window.location.href='tests.html'">
+                    📋 Charger...
+                </button>
+            </div>
+        </div>
+
+        <!-- VUE PRINCIPALE -->
+<div id="view-main-menu" style="display: block;">
+    <div class="dashboard-sections">
+        
+        <!-- SECTION 1 : MUSCULATION -->
+        <div class="section-card">
+            <h2 class="section-title"> Musculation & Entraînement</h2>
+            <div class="btn-grid">
+                <button class="btn-menu btn-img" data-img-ref="parcours" id="btn-mes-programmes" onclick="window.location.href='mes_programmes.html'"> Mes programmes</button>
+                <button class="btn-menu btn-img" data-img-ref="programmes" id="btn-tous-programmes" onclick="window.location.href='tous_les_programmes.html'"> Tous les programmes</button>
+                <button class="btn-menu btn-img" data-img-ref="evaluations" id="btn-tests" onclick="window.location.href='tests.html'">Tests & Évaluations</button>
+            </div>
+        </div>
+
+        <!-- SECTION 2 : SUIVI -->
+        <div class="section-card">
+            <h2 class="section-title">Suivi & Progression</h2>
+            <div class="btn-grid">
+                <button class="btn-menu btn-img" data-img-ref="suivi" id="btn-suivi" onclick="ouvrirPopupSuivi()">Suivi rapide</button>
+                <button class="btn-menu btn-img" data-img-ref="graphiques" id="btn-analyses" onclick="window.location.href='graphiques.html'"> Analyses & Graphiques</button>
+            </div>
+        </div>
+
+<!-- SECTION 3 : GLOSSAIRE & MATÉRIEL -->
+<div class="section-card">
+    <h2 class="section-title">📖 Ressources & Matériel</h2>
+    <div class="btn-grid">
+        <button class="btn-menu btn-img" data-img-ref="glossaire" id="btn-glossaire" onclick="afficherVueGlossaire()"> Glossaire & Guides</button>
+        <button class="btn-menu btn-img" data-img-ref="materiel" id="btn-biblio-matos-direct" onclick="window.location.href='Bibliothèque de Matériel.html'"> Bibliothèque de Matériel</button>
+    </div>
+</div>
+
+<!-- SECTION 4 : ESPACE PERSO & SERVICES -->
+<div class="section-card">
+    <h2 class="section-title"> Espace Personnel</h2>
+    <div class="btn-grid">
+        <button class="btn-menu btn-img" data-img-ref="personnel" id="btn-perso"> Espace Personnel</button>
+        <button class="btn-menu btn-img" data-img-ref="autre" id="btn-services" onclick="window.location.href='services.html'"> Autres services</button>
+    </div>
+</div>
+
+
+    </div>
+</div>
+
+        <!-- VUE SECONDAIRE : GLOSSAIRE -->
+        <div id="view-glossaire-menu" style="display: none;">
+            <div class="section-card">
+                <h2 class="section-title"> Glossaire & Guides</h2>
+                <div class="btn-grid">
+                    <button class="btn-menu btn-img" data-img-ref="materiel" id="btn-biblio-matos" onclick="window.location.href='Bibliothèque de Matériel.html'"> Bibliothèque de Matériel</button>
+                    <button class="btn-menu btn-img" data-img-ref="musculation" id="btn-lexique-exercices" onclick="window.location.href='lexique_exercices.html'"> Lexique des Exercices</button>
+                    <button class="btn-menu btn-img" data-img-ref="nutrition" style="opacity: 0.4; cursor: not-allowed;" disabled> Guide Nutrition & Lexique (Bientôt)</button>
+                    <button class="btn-menu" onclick="retourMenuPrincipal()" style="background: transparent; border: 1px solid #29292e; color: #a8a8b3; margin-top: 10px; text-align: center;">← Retour au menu principal</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODALE DE SUIVI -->
+    <div id="popup-suivi" class="modal-overlay">
+        <div class="modal-box">
+            <h2> Suivi</h2>
+            <p>Sélectionne l'élément de suivi auquel tu souhaites accéder :</p>
+            <div class="popup-buttons-list">
+                <button class="btn-popup-action" onclick="window.location.href='mesures.html'"> Mesures Corporelles</button>
+                <button class="btn-popup-close" onclick="fermerPopupSuivi()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIRESTORE THEME SYNC -->
+    <script type="module">
+        import { auth, db } from "./firebase-config.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                try {
+                    const userDoc = await getDoc(doc(db, "userAnswers", user.uid));
+                    if (userDoc.exists() && userDoc.data().currentTheme === "light") {
+                        document.body.classList.add("theme-light");
+                    } else {
+                        document.body.classList.remove("theme-light");
+                    }
+                } catch (e) {
+                    console.log("Thème par défaut appliqué.");
+                }
+            }
+        });
+    </script>
+
+    <script type="module" src="dashboard.js"></script>
+    <script src="mascotte.js"></script>
+    <script src="button-images.js"></script>
+
+    <script>
+        function ouvrirPopupSuivi() { 
+            document.getElementById('popup-suivi').style.display = 'flex'; 
+        }
+        
+        function fermerPopupSuivi() { 
+            document.getElementById('popup-suivi').style.display = 'none'; 
+        }
+
+        function afficherVueGlossaire() {
+            document.getElementById('view-main-menu').style.display = 'none';
+            document.getElementById('view-glossaire-menu').style.display = 'block';
+        }
+
+        function retourMenuPrincipal() {
+            document.getElementById('view-glossaire-menu').style.display = 'none';
+            document.getElementById('view-main-menu').style.display = 'block';
+        }
+
+        window.onclick = function(event) {
+            const popup = document.getElementById('popup-suivi');
+            if (event.target === popup) { fermerPopupSuivi(); }
+        }
+    </script>
+</body>
+</html>

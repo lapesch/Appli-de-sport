@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- Fichier Web Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Personnalisation de la barre d'état Android -->
+<meta name="theme-color" content="#ff9900">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script src="theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Espace Graphiques - Suivi Métrique</title>
+    <!-- Chart.js & Plugins -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #1e293b;
+            --accent: #3b82f6;
+            --accent-puberte: #ec4899;
+            --accent-muscu: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            touch-action: none;
+        }
+
+        /* BARRE DE NAVIGATION FIXE (HUD) */
+        .fixed-hud {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: rgba(30, 41, 59, 0.92);
+            backdrop-filter: blur(12px);
+            padding: 8px 15px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        }
+
+        .hud-controls-left, .hud-controls-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hud-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .hud-btn:active {
+            transform: scale(0.95);
+        }
+
+        .hud-btn.secondary {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .zoom-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(11, 15, 25, 0.7);
+            padding: 3px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .btn-sm {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-sm:active {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* ESPACE DE TRAVAIL INTERACTIF */
+        .viewport-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .workspace-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4000px;
+            height: 4000px;
+            background-color: var(--bg-main);
+            background-image: 
+                radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 25px 25px, 100px 100px, 100px 100px;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+
+        /* CARTE DE GRAPHIQUE */
+        .chart-card {
+            position: absolute;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        #metricsChartCard {
+            top: 90px;
+            left: 40px;
+            width: 900px;
+            max-width: 92vw;
+            height: 620px;
+        }
+
+        .placeholder-card {
+            position: absolute;
+            border: 2px dashed var(--border);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 600;
+            background: rgba(30, 41, 59, 0.2);
+        }
+
+        .card-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        /* BARRE D'OUTILS ET COMMANDES DE ZOOM AXIAL */
+        .chart-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            background: rgba(11, 15, 25, 0.5);
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .axis-zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .axis-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-card);
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .axis-box span {
+            color: var(--text-main);
+            font-weight: bold;
+        }
+
+        .multi-select-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .multi-select-btn {
+            background: var(--bg-main);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .multi-select-menu {
+            position: absolute;
+            top: 105%;
+            left: 0;
+            z-index: 100;
+            background: #151d2a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            max-height: 280px;
+            width: 280px;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            display: none;
+        }
+
+        .multi-select-menu.show {
+            display: block;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .checkbox-item:hover {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .checkbox-item input {
+            accent-color: var(--accent);
+            width: 16px;
+            height: 16px;
+        }
+
+        .canvas-container {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            min-height: 0;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .canvas-container:active {
+            cursor: grabbing;
+        }
+
+        @media (max-width: 768px) {
+            #metricsChartCard {
+                top: 80px;
+                left: 15px;
+                width: 92vw;
+                height: 540px;
+                padding: 12px;
+            }
+            .hud-btn span { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HUD FIXE DE NAVIGATION PAGE -->
+    <div class="fixed-hud">
+        <div class="hud-controls-left">
+            <button class="hud-btn secondary" onclick="window.location.href='dashboard.html'">
+                🏠 <span>Menu</span>
+            </button>
+            <button class="hud-btn" onclick="centerOnMetricsCard()">
+                🎯 <span>Centrer Vue</span>
+            </button>
+        </div>
+
+        <div class="hud-controls-right">
+            <div class="zoom-group">
+                <button class="btn-sm" onclick="zoomGlobal(-0.15)">-</button>
+                <span id="globalZoomVal" style="font-size: 0.8rem; font-weight: bold; width: 42px; text-align: center;">100%</span>
+                <button class="btn-sm" onclick="zoomGlobal(0.15)">+</button>
+                <button class="btn-sm" onclick="resetGlobalZoom()" title="Réinitialiser zoom page">🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEUR DU TRÈS GRAND ESPACE -->
+    <div class="viewport-container" id="viewport">
+        <div class="workspace-canvas" id="workspaceCanvas">
+
+            <!-- CARTE DU GRAPHIQUE DES MESURES -->
+            <div class="chart-card" id="metricsChartCard">
+                
+                <div class="card-header-bar">
+                    <div>
+                        <h2 style="font-size: 1.1rem; color: var(--accent);">📊 Évolution des Mesures</h2>
+                        <p style="font-size: 0.75rem; color: var(--text-muted);">Glisse sur le graphique pour te déplacer tactilement</p>
+                    </div>
+
+                    <button class="hud-btn secondary" onclick="window.location.href='mesures.html'">
+                        📏 Aller aux Mesures
+                    </button>
+                </div>
+
+                <!-- BARRE D'OUTILS ET CONTROLES DE ZOOM PAR AXE -->
+                <div class="chart-toolbar">
+                    <div class="multi-select-wrapper">
+                        <button class="multi-select-btn" onclick="toggleMetricDropdown(event)">
+                            📈 Mesures (<span id="selectedCount">1</span>) ▾
+                        </button>
+                        <div class="multi-select-menu" id="metricDropdown" onclick="event.stopPropagation()">
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">
+                                Coche les mesures à comparer :
+                            </div>
+                            <div id="checkboxContainer"></div>
+                        </div>
+                    </div>
+
+                    <!-- BOUTONS ZOOM PAR AXE -->
+                    <div class="axis-zoom-controls">
+                        <div class="axis-box">
+                            <span>Axe X (Temps)</span>
+                            <button class="btn-sm" onclick="zoomChartAxis('metricsChart', 'x', 0.8)" title="Dézoomer X">-</button>
+                            <button class="btn-sm" onclick="zoomChartAxis('metricsChart', 'x', 1.25)" title="Zoomer X">+</button>
+                        </div>
+
+                        <div class="axis-box">
+                            <span>Axe Y (Valeurs)</span>
+                            <button class="btn-sm" onclick="zoomChartAxis('metricsChart', 'y', 0.8)" title="Dézoomer Y">-</button>
+                            <button class="btn-sm" onclick="zoomChartAxis('metricsChart', 'y', 1.25)" title="Zoomer Y">+</button>
+                        </div>
+
+                        <button class="btn-sm" style="width: auto; padding: 0 8px;" onclick="resetChartPan('metricsChart')" title="Réinitialiser vue du graphique">
+                            🔄
+                        </button>
+                    </div>
+                </div>
+
+                <div class="canvas-container">
+                    <canvas id="metricsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- EMPLACEMENTS FUTURS -->
+            <div class="placeholder-card" style="top: 90px; left: 980px; width: 850px; height: 620px;">
+                ➕ Emplacement Futur Graphique #2
+            </div>
+
+            <div class="placeholder-card" style="top: 740px; left: 40px; width: 1790px; height: 650px;">
+                ➕ Emplacement Futur Grand Graphique d'Analyse globale
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth } from "./firebase-config.js";
+        import { chargerDonneesCloud } from "./storage.js";
+
+        window.updateChart = updateChart;
+        window.zoomGlobal = zoomGlobal;
+        window.resetGlobalZoom = resetGlobalZoom;
+        window.centerOnMetricsCard = centerOnMetricsCard;
+        window.toggleMetricDropdown = toggleMetricDropdown;
+        window.resetChartPan = resetChartPan;
+        window.zoomChartAxis = zoomChartAxis;
+
+        const activeProfile = sessionStorage.getItem("activeProfile") || "Principal";
+        const chartInstances = {};
+
+        /* --- 1. NAVIGATION SUR LA PAGE GLOBALE --- */
+        let scale = 1.0;
+        let posX = 0;
+        let posY = 0;
+        let isDraggingPage = false;
+        let startX = 0, startY = 0;
+        let initialPinchDistance = null;
+        let initialScale = 1.0;
+
+        const viewport = document.getElementById("viewport");
+        const workspace = document.getElementById("workspaceCanvas");
+
+        function updateTransform() {
+            workspace.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+            document.getElementById('globalZoomVal').innerText = `${Math.round(scale * 100)}%`;
+        }
+
+        function zoomGlobal(delta) {
+            scale = Math.min(Math.max(0.2, scale + delta), 2.5);
+            updateTransform();
+        }
+
+        function resetGlobalZoom() {
+            scale = 1.0;
+            centerOnMetricsCard();
+        }
+
+        function centerOnMetricsCard() {
+            posX = -20;
+            posY = -70;
+            scale = window.innerWidth < 768 ? 0.8 : 1.0;
+            updateTransform();
+        }
+
+        viewport.addEventListener("pointerdown", (e) => {
+            if (e.target.closest(".chart-card") || e.target.closest(".fixed-hud")) return;
+            isDraggingPage = true;
+            startX = e.clientX - posX;
+            startY = e.clientY - posY;
+        });
+
+        window.addEventListener("pointermove", (e) => {
+            if (!isDraggingPage) return;
+            posX = e.clientX - startX;
+            posY = e.clientY - startY;
+            updateTransform();
+        });
+
+        window.addEventListener("pointerup", () => isDraggingPage = false);
+
+        viewport.addEventListener("touchmove", (e) => {
+            if (e.touches.length === 2 && !e.target.closest(".canvas-container")) {
+                const dist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+
+                if (initialPinchDistance === null) {
+                    initialPinchDistance = dist;
+                    initialScale = scale;
+                } else {
+                    const factor = dist / initialPinchDistance;
+                    scale = Math.min(Math.max(0.2, initialScale * factor), 2.5);
+                    updateTransform();
+                }
+            }
+        });
+
+        viewport.addEventListener("touchend", () => {
+            initialPinchDistance = null;
+        });
+
+        /* --- 2. FORMATAGE STRICT DES DATES EN "22 juin 2025" --- */
+        function formatDateLongue(timestamp) {
+            if (!timestamp) return '';
+            const dateObj = new Date(timestamp);
+            if (isNaN(dateObj.getTime())) return '';
+
+            return dateObj.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        function parseTimestamp(dateInput) {
+            if (typeof dateInput === 'number') return dateInput;
+            if (typeof dateInput === 'string') {
+                const parts = dateInput.split('/');
+                if (parts.length === 3) {
+                    return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+                }
+            }
+            const d = new Date(dateInput);
+            return isNaN(d.getTime()) ? Date.now() : d.getTime();
+        }
+
+        /* --- 3. GÉNÉRATEUR DE DATES : MESURES + TOUS LES DIMANCHES --- */
+        function generateSundaysAndMeasureTicks(minTime, maxTime, measureTimestamps) {
+            const ticksSet = new Set();
+
+            measureTimestamps.forEach(ts => {
+                const d = new Date(ts);
+                d.setHours(0,0,0,0);
+                ticksSet.add(d.getTime());
+            });
+
+            let cur = new Date(minTime || Date.now());
+            cur.setFullYear(cur.getFullYear() - 2);
+            cur.setHours(0,0,0,0);
+
+            while (cur.getDay() !== 0) {
+                cur.setDate(cur.getDate() + 1);
+            }
+
+            const end = new Date(maxTime || Date.now());
+            end.setFullYear(end.getFullYear() + 2);
+
+            while (cur <= end) {
+                ticksSet.add(cur.getTime());
+                cur.setDate(cur.getDate() + 7);
+            }
+
+            return Array.from(ticksSet).sort((a, b) => a - b);
+        }
+
+        /* --- 4. CRÉATION DU GRAPHIQUE AVEC DÉPLACEMENT TACTILE ET AXE FLUIDE --- */
+        function createInteractiveChart(canvasId, chartDatasets, allTicks) {
+            const ctx = document.getElementById(canvasId).getContext("2d");
+
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: { datasets: chartDatasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#f8fafc', font: { size: 12, weight: 'bold' } }
+                        },
+                        zoom: {
+                            pan: {
+                                enabled: true,
+                                mode: 'xy',
+                                threshold: 0
+                            },
+                            zoom: {
+                                wheel: { enabled: true },
+                                pinch: { enabled: true },
+                                mode: 'xy'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return formatDateLongue(context[0].parsed.x);
+                                },
+                                label: function(context) {
+                                    return ` ${context.dataset.label} : ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            ticks: {
+                                color: '#94a3b8',
+                                autoSkip: true,
+                                autoSkipPadding: 20,
+                                maxRotation: 45,
+                                minRotation: 0,
+                                callback: function(value) {
+                                    return formatDateLongue(value);
+                                }
+                            },
+                            afterBuildTicks: function(axis) {
+                                if (allTicks && allTicks.length > 0) {
+                                    const min = axis.min;
+                                    const max = axis.max;
+                                    
+                                    const visibleTicks = (min !== undefined && max !== undefined)
+                                        ? allTicks.filter(v => v >= min && v <= max)
+                                        : allTicks;
+
+                                    axis.ticks = visibleTicks.map(v => ({ value: v }));
+                                }
+                            },
+                            grid: { color: '#334155' }
+                        },
+                        y: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#334155' }
+                        }
+                    }
+                }
+            });
+
+            chartInstances[canvasId] = chart;
+            return chart;
+        }
+
+        /* --- FONCTIONS DE ZOOM SPÉCIFIQUE PAR AXE --- */
+        function zoomChartAxis(canvasId, axisKey, factor) {
+            const chart = chartInstances[canvasId];
+            if (!chart) return;
+
+            const scale = chart.scales[axisKey];
+            if (!scale) return;
+
+            const currentMin = scale.min;
+            const currentMax = scale.max;
+            const range = currentMax - currentMin;
+
+            if (range <= 0) return;
+
+            const center = (currentMin + currentMax) / 2;
+            const newHalfRange = (range / factor) / 2;
+
+            const newMin = center - newHalfRange;
+            const newMax = center + newHalfRange;
+
+            chart.zoomScale(axisKey, { min: newMin, max: newMax }, 'none');
+        }
+
+        function resetChartPan(canvasId) {
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].resetZoom();
+            }
+        }
+
+        /* --- 5. MESURES & COULEURS --- */
+        const metricsDefinition = [
+            { id: "Poids", label: "Poids", unit: "kg" },
+            { id: "Taille", label: "Taille", unit: "cm" },
+            { id: "Tete", label: "Tour de Tête", unit: "cm" },
+            { id: "FrontMenton", label: "Front - Menton", unit: "cm" },
+            { id: "CouRel", label: "Cou (relâché)", unit: "cm" },
+            { id: "CouContr", label: "Cou (contracté)", unit: "cm" },
+            { id: "BicepsDRel", label: "Biceps D (relâché)", unit: "cm" },
+            { id: "BicepsDContr", label: "Biceps D (contracté)", unit: "cm" },
+            { id: "BicepsGRel", label: "Biceps G (relâché)", unit: "cm" },
+            { id: "BicepsGContr", label: "Biceps G (contracté)", unit: "cm" },
+            { id: "AvantBrasD", label: "Avant-bras D", unit: "cm" },
+            { id: "AvantBrasG", label: "Avant-bras G", unit: "cm" },
+            { id: "PoignetD", label: "Poignet D", unit: "cm" },
+            { id: "PoignetG", label: "Poignet G", unit: "cm" },
+            { id: "PoitrineRel", label: "Poitrine (relâché)", unit: "cm" },
+            { id: "PoitrineContr", label: "Poitrine (contracté)", unit: "cm" },
+            { id: "EpauTour", label: "Tour d'Épaules", unit: "cm" },
+            { id: "DosLarg", label: "Largeur de Dos", unit: "cm" },
+            { id: "TailleRel", label: "Tour de Taille (relâché)", unit: "cm" },
+            { id: "TailleContr", label: "Tour de Taille (contracté)", unit: "cm" },
+            { id: "VentreNombril", label: "Ventre (nombril)", unit: "cm" },
+            { id: "HanchesTour", label: "Tour de Hanches", unit: "cm" },
+            { id: "CuisseHautD", label: "Cuisse Haut D", unit: "cm" },
+            { id: "CuisseHautG", label: "Cuisse Haut G", unit: "cm" },
+            { id: "GripD", label: "Force Grip D", unit: "kg" },
+            { id: "GripG", label: "Force Grip G", unit: "kg" },
+            { id: "PenisRepLong", label: "Pénis au repos (longueur)", unit: "cm" },
+            { id: "PenisErectLong", label: "Pénis en érection (longueur)", unit: "cm" }
+        ];
+
+        const COLOR_PALETTE = [
+            '#3b82f6', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6',
+            '#06b6d4', '#ef4444', '#84cc16', '#d946ef', '#14b8a6'
+        ];
+
+        let dataset = [];
+        let selectedMetrics = ["Poids"];
+
+        function toggleMetricDropdown(e) {
+            e.stopPropagation();
+            document.getElementById("metricDropdown").classList.toggle("show");
+        }
+
+        window.addEventListener("click", () => {
+            document.getElementById("metricDropdown").classList.remove("show");
+        });
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const cloudAnswers = await chargerDonneesCloud("userAnswers");
+                if (cloudAnswers && cloudAnswers.currentTheme === "light") {
+                    document.body.classList.add("theme-light");
+                }
+            }
+            await initGraph();
+        });
+
+        window.addEventListener("DOMContentLoaded", async () => {
+            centerOnMetricsCard();
+            if (!auth.currentUser) {
+                await initGraph();
+            }
+        });
+
+        async function initGraph() {
+            let loadedData = null;
+
+            if (auth.currentUser) {
+                const cloudMetrics = await chargerDonneesCloud("userMetrics");
+                if (cloudMetrics && cloudMetrics[activeProfile]) {
+                    loadedData = cloudMetrics[activeProfile];
+                }
+            }
+
+            if (!loadedData) {
+                const localRaw = localStorage.getItem(`userMetrics_${activeProfile}`);
+                if (localRaw) {
+                    try { loadedData = JSON.parse(localRaw); } catch(e){}
+                }
+            }
+
+            if (loadedData && loadedData.dataset) {
+                dataset = loadedData.dataset;
+            }
+
+            renderCheckboxMenu();
+            updateChart();
+        }
+
+        function renderCheckboxMenu() {
+            const container = document.getElementById("checkboxContainer");
+            container.innerHTML = metricsDefinition.map(m => `
+                <label class="checkbox-item">
+                    <input type="checkbox" value="${m.id}" ${selectedMetrics.includes(m.id) ? 'checked' : ''} onchange="handleMetricSelectionChange(this)">
+                    <span>${m.label} (${m.unit})</span>
+                </label>
+            `).join("");
+        }
+
+        window.handleMetricSelectionChange = function(checkbox) {
+            if (checkbox.checked) {
+                if (!selectedMetrics.includes(checkbox.value)) {
+                    selectedMetrics.push(checkbox.value);
+                }
+            } else {
+                if (selectedMetrics.length > 1) {
+                    selectedMetrics = selectedMetrics.filter(id => id !== checkbox.value);
+                } else {
+                    checkbox.checked = true;
+                    return;
+                }
+            }
+            document.getElementById("selectedCount").innerText = selectedMetrics.length;
+            updateChart();
+        };
+
+        function updateChart() {
+            const sortedData = [...dataset].sort((a, b) => {
+                const tA = parseTimestamp(a.timestamp || a.date);
+                const tB = parseTimestamp(b.timestamp || b.date);
+                return tA - tB;
+            });
+
+            const measureTimestamps = [];
+            sortedData.forEach(d => {
+                const ts = parseTimestamp(d.timestamp || d.date);
+                if (ts) measureTimestamps.push(ts);
+            });
+
+            const minTime = measureTimestamps.length ? measureTimestamps[0] : Date.now();
+            const maxTime = measureTimestamps.length ? measureTimestamps[measureTimestamps.length - 1] : Date.now();
+
+            const allTicks = generateSundaysAndMeasureTicks(minTime, maxTime, measureTimestamps);
+
+            const chartDatasets = selectedMetrics.map((metricId, index) => {
+                const metricDef = metricsDefinition.find(m => m.id === metricId);
+                const color = COLOR_PALETTE[index % COLOR_PALETTE.length];
+
+                const points = [];
+                sortedData.forEach(d => {
+                    const ts = parseTimestamp(d.timestamp || d.date);
+                    if (d.values && d.values[metricId] !== undefined && d.values[metricId] !== null) {
+                        points.push({ x: ts, y: d.values[metricId] });
+                    }
+                });
+
+                return {
+                    label: `${metricDef.label} (${metricDef.unit})`,
+                    data: points,
+                    borderColor: color,
+                    backgroundColor: `${color}22`,
+                    borderWidth: 3,
+                    pointBackgroundColor: color,
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    spanGaps: true,
+                    tension: 0.25
+                };
+            });
+
+            createInteractiveChart("metricsChart", chartDatasets, allTicks);
+        }
+    </script>
+</body>
+</html>
